@@ -29,3 +29,12 @@ threejs texture loader
 https://threejs.org/docs/index.html#api/en/loaders/TextureLoader 
 
 
+
+let diamonds = ['card_Textures\ace_of_diamonds.png', 'card_Textures\2_of_diamonds.png', 'card_Textures\3_of_diamonds.png', 'card_Textures\4_of_diamonds.png',
+'card_Textures\5_of_diamonds.png', 'card_Textures\6_of_diamonds.png', 'card_Textures\7_of_diamonds.png', 'card_Textures\8_of_diamonds.png', 'card_Textures\9_of_diamonds.png',
+'card_Textures\10_of_diamonds.png', 'card_Textures\jack_of_diamonds2.png', 'card_Textures\queen_of_diamonds2.png', 'card_Textures\king_of_diamonds2.png']
+
+
+let spades = ['card_Textures\ace_of_spades.png', 'card_Textures\2_of_spades.png', 'card_Textures\3_of_spades.png', 'card_Textures\4_of_spades.png',
+'card_Textures\5_of_spades.png', 'card_Textures\6_of_spades.png', 'card_Textures\7_of_spades.png', 'card_Textures\8_of_spades.png', 
+'card_Textures\9_of_spades.png', 'card_Textures\10_of_spades.png', 'card_Textures\jack_of_spades2.png', 'card_Textures\queen_of_spades2.png', 'card_Textures\king_of_spades2.png']
