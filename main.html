@@ -18,6 +18,10 @@
     let windowWidth = window.innerWidth;
     let windowHeight = window.innerHeight;
 
+    let woodTexture = 'misc_textures/table.jpg';
+    
+    let backOfCard = 'misc_textures/card_back.png';
+
     let clubs = ['card_Textures/ace_of_clubs.png', 'card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
       'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
       'card_Textures/10_of_clubs.png', 'card_Textures/jack_of_clubs2.png', 'card_Textures/queen_of_clubs2.png',
@@ -54,7 +58,7 @@
 
     const loader = new THREE.TextureLoader();
 
-    const geometry = new THREE.BoxGeometry(2, .01, 1);
+    const geometry = new THREE.BoxGeometry(1, .01, 2);
 
     let i = 0;
 
@@ -62,9 +66,9 @@
 
 
     const materials = [
-      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-1.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(clubs[2]) }),
       new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-2.jpg') }),
-      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-3.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
       new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-4.jpg') }),
       new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-5.jpg') }),
       new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-6.jpg') }),
