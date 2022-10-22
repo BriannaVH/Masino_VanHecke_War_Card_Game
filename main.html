@@ -14,9 +14,18 @@
     import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
 
     var scene = new THREE.Scene();
-    
+
     let windowWidth = window.innerWidth;
     let windowHeight = window.innerHeight;
+
+    let clubs = ['card_Textures/ace_of_clubs.png', 'card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
+      'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
+      'card_Textures/10_of_clubs.png', 'card_Textures/jack_of_clubs2.png', 'card_Textures/queen_of_clubs2.png',
+      'card_Textures/king_of_clubs2.png'];
+
+    let hearts = ['card_Textures/ace_of_hearts.png', 'card_Textures/2_of_hearts.png', 'card_Textures/3_of_hearts.png', 'card_Textures/4_of_hearts.png', 'card_Textures/5_of_hearts.png',
+      'card_Textures/6_of_hearts.png', 'card_Textures/7_of_hearts.png', 'card_Textures/8_of_hearts.png', 'card_Textures/9_of_hearts.png',
+      'card_Textures/10_of_hearts.png', 'card_Textures/jack_of_hearts2.png', 'card_Textures/queen_of_hearts2.png', 'card_Textures/king_of_hearts2.png',];
 
     var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
     camera.position.z = 3;  // Try moving this around!
@@ -50,6 +59,8 @@
     let i = 0;
 
 
+
+
     const materials = [
       new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-1.jpg') }),
       new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-2.jpg') }),
@@ -64,7 +75,7 @@
 
 
     function animate() {
-        updateSize();
+      updateSize();
       // plane.rotateX(.01);
       // plane.rotateY(.01);
       cube.rotateX(.01);
@@ -77,14 +88,14 @@
       renderer.render(scene, camera);
     }
 
-        function updateSize() {
-            if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
-                //actually been changed than this if statement is triggered
-                windowWidth = window.innerWidth;
-                windowHeight = window.innerHeight;
-                renderer.setSize(windowWidth, windowHeight);
-            }
-        }
+    function updateSize() {
+      if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
+        //actually been changed than this if statement is triggered
+        windowWidth = window.innerWidth;
+        windowHeight = window.innerHeight;
+        renderer.setSize(windowWidth, windowHeight);
+      }
+    }
 
 
     function keyHandlerT(e) {
