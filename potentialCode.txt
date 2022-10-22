@@ -1,5 +1,10 @@
 EXAMPLES: ----------------------------------------------------------------------------------------------
 
+https://threejs.org/examples/?q=light#webgl_lights_physical
+--> Point light that we actually used
+
+
+
 two point light example
 https://threejs.org/examples/#webgl_shadowmap_pointlight
 

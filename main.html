@@ -86,20 +86,20 @@
 
 
 
-    const bulbGeometry = new THREE.SphereGeometry( 0.02, 16, 8 );
-   // bulbGeometry.position.set(3,0,0);
-				let bulbLight = new THREE.PointLight( 0xffee88, 1, 100, 2 );
+    const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
+    // bulbGeometry.position.set(3,0,0);
+    let bulbLight = new THREE.PointLight(0xffee88, 1, 100, 2);
 
-				let bulbMat = new THREE.MeshStandardMaterial( {
-					emissive: 0xffffee,
-					emissiveIntensity: 1,
-					color: 0x000000
-				} );
-				bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
-				bulbLight.position.set( 0, -4, 2 );
-				bulbLight.castShadow = true;
-				scene.add( bulbLight );
-        console.log(bulbLight);
+    let bulbMat = new THREE.MeshStandardMaterial({
+      emissive: 0xffffee,
+      emissiveIntensity: 1,
+      color: 0x000000
+    });
+    bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
+    bulbLight.position.set(0, -4, 2);
+    bulbLight.castShadow = true;
+    scene.add(bulbLight);
+    console.log(bulbLight);
     // const geometry = new THREE.BoxGeometry(1, 1, 1);
     // //const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
     // var loader = new THREE.TextureLoader();
@@ -214,7 +214,6 @@
       }
 
       console.log(deck);
-
       //testing
       for (let i = 0; i < deck.length; i++) {
         console.log("i", i);
@@ -225,13 +224,12 @@
         deck[i].mesh.translateX(Math.random());
         deck[i].mesh.translateY(Math.random());
       }
-
     }
 
 
     function initTable() {
       let string1 = 'floor/floor2.png';
-      let geometry = new THREE.BoxGeometry(3, 3,.15);
+      let geometry = new THREE.BoxGeometry(3, 3, .15);
       let material = new THREE.MeshPhongMaterial({
         // Use the map attribute to hold the texture
         map: loader.load(woodTexture),
@@ -259,7 +257,7 @@
 
     // }
 
-    
+
 
 
     initTable();
@@ -296,18 +294,20 @@
 
     function keyHandlerT(e) {
       switch (e.keyCode) {
-        case 84:
-          console.log("into key handler");
-          if (i < materials.length) {
-            cube.material = materials[i];
-            i = i + 1;
-          }
-          else {
-            cube.material = materials[i];
-            i = 0;
-          }
+        case 87: //w
+          bulbLight.translateY(.1);
+          break;
+        case 83: //s
+          bulbLight.translateY(-.1);
+          break;
+        case 68: //d
+          bulbLight.translateX(.1);
+          break;
+        case 65: //a
+          bulbLight.translateX(-.1);
           break;
       }
+
     }
 
     document.addEventListener("keydown", keyHandlerT, false);
