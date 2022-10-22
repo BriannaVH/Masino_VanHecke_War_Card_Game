@@ -69,12 +69,9 @@
 
     const loader = new THREE.TextureLoader();
 
-    const geometry = new THREE.BoxGeometry(1, .01, 2);
+    const geometry = new THREE.BoxGeometry(.2, .01, .4);
 
     let i = 0;
-
-
-
 
     const materials = [
       
@@ -88,15 +85,16 @@
 
     const cube = new THREE.Mesh(geometry, materials);
     scene.add(cube);
+    cube.rotateX(1);
 
 
 
-    //  function person(first, last){
-    //   this.firstName = first;
-    //   this.last = last;
-
-    //  }
-    //  person("josy", "bob");
+    function Player(playerID){
+        this.player = playerID;
+        this.playerDeck = [];
+        this.playing = true;
+        this.currentCards = [];
+    }
 
     function Card(value, suit) {
       //Suit:
@@ -107,7 +105,7 @@
       this.cardValue=value;
       this.cardSuit= suit;
 
-      this.geometry = new THREE.BoxGeometry(1, .01, 2);
+      this.geometry = new THREE.BoxGeometry(.2, .01, .4);
       this.material = makeMaterial(this.cardValue, this.cardSuit);
 
       this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -116,7 +114,7 @@
 
     function makeMaterial(value, suit) {
 
-      let index = value +1;
+      let index = value-1;
       let string;
       let material;
 
@@ -174,6 +172,16 @@
 
       console.log(deck);
 
+      //testing
+       for(let i = 0; i < deck.length; i++){
+        console.log("i", i);
+        console.log(deck[i].mesh);
+        deck[i].mesh.rotateX(Math.random());
+        deck[i].mesh.rotateY(Math.random());
+        deck[i].mesh.rotateZ(Math.random());
+        deck[i].mesh.translateX(Math.random());
+        deck[i].mesh.translateY(Math.random());
+      }
     
     }
 
@@ -186,12 +194,13 @@ initCards();
 
 
 
+
     function animate() {
       updateSize();
       // plane.rotateX(.01);
       // plane.rotateY(.01);
-      cube.rotateX(.01);
-      cube.rotateY(.01);
+    //   cube.rotateX(.01);
+    //   cube.rotateY(.01);
       requestAnimationFrame(animate);
       render();
     }
