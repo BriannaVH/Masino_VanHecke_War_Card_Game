@@ -8,3 +8,39 @@ let clubs = ['card_Textures/ace_of_clubs.png','card_Textures/2_of_clubs.png','ca
 let hearts = = ['card_Textures/ace_of_hearts.png','card_Textures/2_of_hearts.png','card_Textures/3_of_hearts.png','card_Textures/4_of_hearts.png','card_Textures/5_of_hearts.png',
 'card_Textures/6_of_hearts.png','card_Textures/7_of_hearts.png','card_Textures/8_of_hearts.png','card_Textures/9_of_hearts.png',
 'card_Textures/10_of_hearts.png','card_Textures/jack_of_hearts2.png','card_Textures/queen_of_hearts2.png','card_Textures/king_of_hearts2.png', ]
+
+
+
+     function keyHandler(e) {
+            switch (e.keyCode) {
+                case 76: //L
+                ambientLightOn = !ambientLightOn;
+                if(ambientLightOn == true){
+                    light.visible = true;
+                }
+                else{
+                    light.visible = false;
+                }
+                    break;
+                case 80: //P
+                pointLightOn = !pointLightOn;
+                if(pointLightOn == true){
+                    bulbLight.visible = true;
+                }
+                else{
+                    bulbLight.visible = false;
+                }
+                    break;
+
+            }
+        }
+
+
+        document.addEventListener("keydown", keyHandler, false);
+
+
+        
+
+        let ambientLightOn = true;
+        let pointLightOn = true;
+
