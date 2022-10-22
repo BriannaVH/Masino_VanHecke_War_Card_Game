@@ -1,328 +1,346 @@
 <html>
 
 <head>
-  <title>Three.js BuffedGeometry Example</title>
+    <title>Three.js BuffedGeometry Example</title>
 </head>
 
 <body>
 
-  <canvas id="myCanvas" width="1650" height="700"></canvas>
+    <canvas id="myCanvas" width="1650" height="700"></canvas>
 
 
-  <script type="module">
+    <script type="module">
 
-    import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
+        import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
 
-    var scene = new THREE.Scene();
+        var scene = new THREE.Scene();
 
-    let windowWidth = window.innerWidth;
-    let windowHeight = window.innerHeight;
-    let deck = [];
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let deck = [];
+        let ambientLightOn = true;
+        let pointLightOn = true;
 
-    let woodTexture = 'misc_textures/table.jpg';
+        let woodTexture = 'misc_textures/table.jpg';
 
-    let backOfCard = 'misc_textures/card_back.png';
+        let backOfCard = 'misc_textures/card_back.png';
 
-    let clubs = ['card_Textures/ace_of_clubs.png', 'card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
-      'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
-      'card_Textures/10_of_clubs.png', 'card_Textures/jack_of_clubs2.png', 'card_Textures/queen_of_clubs2.png',
-      'card_Textures/king_of_clubs2.png'];
+        let clubs = ['card_Textures/ace_of_clubs.png', 'card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
+            'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
+            'card_Textures/10_of_clubs.png', 'card_Textures/jack_of_clubs2.png', 'card_Textures/queen_of_clubs2.png',
+            'card_Textures/king_of_clubs2.png'];
 
-    let hearts = ['card_Textures/ace_of_hearts.png', 'card_Textures/2_of_hearts.png', 'card_Textures/3_of_hearts.png', 'card_Textures/4_of_hearts.png', 'card_Textures/5_of_hearts.png',
-      'card_Textures/6_of_hearts.png', 'card_Textures/7_of_hearts.png', 'card_Textures/8_of_hearts.png', 'card_Textures/9_of_hearts.png',
-      'card_Textures/10_of_hearts.png', 'card_Textures/jack_of_hearts2.png', 'card_Textures/queen_of_hearts2.png', 'card_Textures/king_of_hearts2.png'];
-
-
-    let diamonds = ['card_Textures/ace_of_diamonds.png', 'card_Textures/2_of_diamonds.png', 'card_Textures/3_of_diamonds.png', 'card_Textures/4_of_diamonds.png',
-      'card_Textures/5_of_diamonds.png', 'card_Textures/6_of_diamonds.png', 'card_Textures/7_of_diamonds.png', 'card_Textures/8_of_diamonds.png', 'card_Textures/9_of_diamonds.png',
-      'card_Textures/10_of_diamonds.png', 'card_Textures/jack_of_diamonds2.png', 'card_Textures/queen_of_diamonds2.png', 'card_Textures/king_of_diamonds2.png'];
+        let hearts = ['card_Textures/ace_of_hearts.png', 'card_Textures/2_of_hearts.png', 'card_Textures/3_of_hearts.png', 'card_Textures/4_of_hearts.png', 'card_Textures/5_of_hearts.png',
+            'card_Textures/6_of_hearts.png', 'card_Textures/7_of_hearts.png', 'card_Textures/8_of_hearts.png', 'card_Textures/9_of_hearts.png',
+            'card_Textures/10_of_hearts.png', 'card_Textures/jack_of_hearts2.png', 'card_Textures/queen_of_hearts2.png', 'card_Textures/king_of_hearts2.png'];
 
 
-    let spades = ['card_Textures/ace_of_spades.png', 'card_Textures/2_of_spades.png', 'card_Textures/3_of_spades.png', 'card_Textures/4_of_spades.png',
-      'card_Textures/5_of_spades.png', 'card_Textures/6_of_spades.png', 'card_Textures/7_of_spades.png', 'card_Textures/8_of_spades.png',
-      'card_Textures/9_of_spades.png', 'card_Textures/10_of_spades.png', 'card_Textures/jack_of_spades2.png', 'card_Textures/queen_of_spades2.png', 'card_Textures/king_of_spades2.png'];
-
-    var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
-    camera.position.x = 0;  // Try moving this around!
-    camera.position.y = -4;
-    camera.position.z = 2;  // Try moving this around!
-    // camera.position.x = 0;  // Try moving this around!
-    // camera.position.y = 0;
-    // camera.position.z = 4;  // Try moving this around!
-    var focal = new THREE.Vector3(0.0, 0.0, 0.0);
-    camera.lookAt(focal);
-    scene.add(camera);
-
-    //TEST
-    let geom = new THREE.BoxGeometry(1, 1, 1);
-    let material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-    let mesh = new THREE.Mesh(geom, material);
-    scene.add(mesh);
+        let diamonds = ['card_Textures/ace_of_diamonds.png', 'card_Textures/2_of_diamonds.png', 'card_Textures/3_of_diamonds.png', 'card_Textures/4_of_diamonds.png',
+            'card_Textures/5_of_diamonds.png', 'card_Textures/6_of_diamonds.png', 'card_Textures/7_of_diamonds.png', 'card_Textures/8_of_diamonds.png', 'card_Textures/9_of_diamonds.png',
+            'card_Textures/10_of_diamonds.png', 'card_Textures/jack_of_diamonds2.png', 'card_Textures/queen_of_diamonds2.png', 'card_Textures/king_of_diamonds2.png'];
 
 
+        let spades = ['card_Textures/ace_of_spades.png', 'card_Textures/2_of_spades.png', 'card_Textures/3_of_spades.png', 'card_Textures/4_of_spades.png',
+            'card_Textures/5_of_spades.png', 'card_Textures/6_of_spades.png', 'card_Textures/7_of_spades.png', 'card_Textures/8_of_spades.png',
+            'card_Textures/9_of_spades.png', 'card_Textures/10_of_spades.png', 'card_Textures/jack_of_spades2.png', 'card_Textures/queen_of_spades2.png', 'card_Textures/king_of_spades2.png'];
 
+        var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
+        camera.position.x = 0;  // Try moving this around!
+        camera.position.y = -4;
+        camera.position.z = 2;  // Try moving this around!
+        // camera.position.x = 0;  // Try moving this around!
+        // camera.position.y = 0;
+        // camera.position.z = 4;  // Try moving this around!
+        var focal = new THREE.Vector3(0.0, 0.0, 0.0);
+        camera.lookAt(focal);
+        scene.add(camera);
 
-
-
-    const light = new THREE.AmbientLight(0x404040, 1); // soft white light
-    scene.add(light);
-
-    // const plight = new THREE.PointLight(0xa0adaf, 100, 100);
-    // plight.position.set(0, 0, 0);
-    // scene.add(plight);
-
-
-    // const sphereSize = 1;
-    // const pointLightHelper = new THREE.PointLightHelper(plight, sphereSize);
-    // scene.add(pointLightHelper);
-
-    // plight.add(mesh);
-
-    var renderer = new THREE.WebGLRenderer({ canvas: myCanvas, antialias: true });
-    renderer.setClearColor(0x000000);
-    // If you want this to span the window, instead of using the myCanvas object, use the window object
-    renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight); //Sets the size of the renderer to the entirety of the
+        //TEST
+        let geom = new THREE.BoxGeometry(1, 1, 1);
+        let material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+        let mesh = new THREE.Mesh(geom, material);
+        scene.add(mesh);
 
 
 
-    const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
-    // bulbGeometry.position.set(3,0,0);
-    let bulbLight = new THREE.PointLight(0xffee88, 1, 100, 2);
-
-    let bulbMat = new THREE.MeshStandardMaterial({
-      emissive: 0xffffee,
-      emissiveIntensity: 1,
-      color: 0x000000
-    });
-    bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
-    bulbLight.position.set(0, -4, 2);
-    bulbLight.castShadow = true;
-    scene.add(bulbLight);
-    console.log(bulbLight);
-    // const geometry = new THREE.BoxGeometry(1, 1, 1);
-    // //const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-    // var loader = new THREE.TextureLoader();
-    // const material = new THREE.MeshBasicMaterial({
-    //   // Use the map attribute to hold the texture
-    //   map: loader.load("whiteMarble.jpg"),
-    // });
-    // const plane = new THREE.Mesh(geometry, material);
-    // scene.add(plane);
-
-    const loader = new THREE.TextureLoader();
-
-    const geometry = new THREE.BoxGeometry(.2, .01, .4);
-
-    let i = 0;
-
-    const materials = [
-
-      new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
-      new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
-      new THREE.MeshBasicMaterial({ map: loader.load(diamonds[2]) }), //this is the front
-      new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }), //this is the back of the card
-      new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
-      new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
-    ];
-
-    const cube = new THREE.Mesh(geometry, materials);
-    scene.add(cube);
-    cube.rotateX(1);
 
 
 
-    function Player(playerID) {
-      this.player = playerID;
-      this.playerDeck = [];
-      this.playing = true;
-      this.currentCards = [];
-    }
+        const light = new THREE.AmbientLight(0x404040, 1); // soft white light
+        scene.add(light);
 
-    function Card(value, suit) {
-      //Suit:
-      //1 -- Spade
-      //2 -- Hearts
-      //3 -- Clubs
-      //4 -- Diamonds
-      this.cardValue = value;
-      this.cardSuit = suit;
+        // const plight = new THREE.PointLight(0xa0adaf, 100, 100);
+        // plight.position.set(0, 0, 0);
+        // scene.add(plight);
 
-      this.geometry = new THREE.BoxGeometry(.2, .01, .4);
-      this.material = makeMaterial(this.cardValue, this.cardSuit);
 
-      this.mesh = new THREE.Mesh(this.geometry, this.material);
-      scene.add(this.mesh);
-    }
+        // const sphereSize = 1;
+        // const pointLightHelper = new THREE.PointLightHelper(plight, sphereSize);
+        // scene.add(pointLightHelper);
 
-    function makeMaterial(value, suit) {
+        // plight.add(mesh);
 
-      let index = value - 1;
-      let string;
-      let material;
+        var renderer = new THREE.WebGLRenderer({ canvas: myCanvas, antialias: true });
+        renderer.setClearColor(0x000000);
+        // If you want this to span the window, instead of using the myCanvas object, use the window object
+        renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight); //Sets the size of the renderer to the entirety of the
 
-      if (suit == 1) { //Spade
-        string = spades[index];
-        material = new THREE.MeshPhongMaterial({
-          // Use the map attribute to hold the texture
-          map: loader.load(string),
+
+
+        const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
+        // bulbGeometry.position.set(3,0,0);
+        let bulbLight = new THREE.PointLight(0xffee88, 1, 100, 2);
+
+        let bulbMat = new THREE.MeshStandardMaterial({
+            emissive: 0xffffee,
+            emissiveIntensity: 1,
+            color: 0x000000
         });
-      }
-      else if (suit == 2) { //Hearts
-        string = hearts[index];
-        material = new THREE.MeshPhongMaterial({
-          // Use the map attribute to hold the texture
-          map: loader.load(string),
-        });
-      }
-      else if (suit == 3) { //Clubs
-        string = clubs[index];
-        material = new THREE.MeshPhongMaterial({
-          // Use the map attribute to hold the texture
-          map: loader.load(string),
-        });
-      }
-      else if (suit == 4) { //Diamonds
-        string = diamonds[index];
-        material = new THREE.MeshPhongMaterial({
-          // Use the map attribute to hold the texture
-          map: loader.load(string),
-        });
-      }
-      //console.log(material);
-      return material;
-    }
+        bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
+        bulbLight.position.set(0, -4, 2);
+        bulbLight.castShadow = true;
+        scene.add(bulbLight);
+        console.log(bulbLight);
+        // const geometry = new THREE.BoxGeometry(1, 1, 1);
+        // //const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+        // var loader = new THREE.TextureLoader();
+        // const material = new THREE.MeshBasicMaterial({
+        //   // Use the map attribute to hold the texture
+        //   map: loader.load("whiteMarble.jpg"),
+        // });
+        // const plane = new THREE.Mesh(geometry, material);
+        // scene.add(plane);
 
-    function initCards() {
-      let card;
+        const loader = new THREE.TextureLoader();
 
-      for (let i = 1; i <= 13; i++) {
-        card = new Card(i, 1);
-        deck.push(card);
-      }
-      for (let i = 1; i <= 13; i++) {
-        card = new Card(i, 2);
-        deck.push(card);
-      }
-      for (let i = 1; i <= 13; i++) {
-        card = new Card(i, 3);
-        deck.push(card);
-      }
-      for (let i = 1; i <= 13; i++) {
-        card = new Card(i, 4);
-        deck.push(card);
-      }
+        const geometry = new THREE.BoxGeometry(.2, .01, .4);
 
-      console.log(deck);
-      //testing
-      for (let i = 0; i < deck.length; i++) {
-        console.log("i", i);
-        console.log(deck[i].mesh);
-        deck[i].mesh.rotateX(Math.random());
-        deck[i].mesh.rotateY(Math.random());
-        deck[i].mesh.rotateZ(Math.random());
-        deck[i].mesh.translateX(Math.random());
-        deck[i].mesh.translateY(Math.random());
-      }
-    }
+        let i = 0;
 
+        const materials = [
 
-    function initTable() {
-      let string1 = 'floor/floor2.png';
-      let geometry = new THREE.BoxGeometry(3, 3, .15);
-      let material = new THREE.MeshPhongMaterial({
-        // Use the map attribute to hold the texture
-        map: loader.load(woodTexture),
-      });
+            new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
+            new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
+            new THREE.MeshBasicMaterial({ map: loader.load(diamonds[2]) }), //this is the front
+            new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }), //this is the back of the card
+            new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
+            new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
+        ];
 
-      let mesh = new THREE.Mesh(geometry, material);
-      //mesh.translateZ(-1);
-      console.log(mesh.position);
-
-      scene.add(mesh);
-
-    }
-    // function initGround(){
-    //   let string1 = 'floor/floor1.jpg';
-    //   let geometry = new THREE.PlaneGeometry(10,10);
-    //   let material = new THREE.MeshBasicMaterial({
-    //       // Use the map attribute to hold the texture
-    //       map: loader.load(string1),
-    //     });
-
-    // let mesh = new THREE.Mesh(geometry, material);
-    // mesh.translateZ(-3);
-
-    // scene.add(mesh);
-
-    // }
+        const cube = new THREE.Mesh(geometry, materials);
+        scene.add(cube);
+        cube.rotateX(1);
 
 
 
+        function Player(playerID) {
+            this.player = playerID;
+            this.playerDeck = [];
+            this.playing = true;
+            this.currentCards = [];
+        }
 
-    initTable();
-    //initCards();
+        function Card(value, suit) {
+            //Suit:
+            //1 -- Spade
+            //2 -- Hearts
+            //3 -- Clubs
+            //4 -- Diamonds
+            this.cardValue = value;
+            this.cardSuit = suit;
+
+            this.geometry = new THREE.BoxGeometry(.2, .01, .4);
+            this.material = makeMaterial(this.cardValue, this.cardSuit);
+
+            this.mesh = new THREE.Mesh(this.geometry, this.material);
+            scene.add(this.mesh);
+        }
+
+        function makeMaterial(value, suit) {
+
+            let index = value - 1;
+            let string;
+            let material;
+
+            if (suit == 1) { //Spade
+                string = spades[index];
+                material = new THREE.MeshPhongMaterial({
+                    // Use the map attribute to hold the texture
+                    map: loader.load(string),
+                });
+            }
+            else if (suit == 2) { //Hearts
+                string = hearts[index];
+                material = new THREE.MeshPhongMaterial({
+                    // Use the map attribute to hold the texture
+                    map: loader.load(string),
+                });
+            }
+            else if (suit == 3) { //Clubs
+                string = clubs[index];
+                material = new THREE.MeshPhongMaterial({
+                    // Use the map attribute to hold the texture
+                    map: loader.load(string),
+                });
+            }
+            else if (suit == 4) { //Diamonds
+                string = diamonds[index];
+                material = new THREE.MeshPhongMaterial({
+                    // Use the map attribute to hold the texture
+                    map: loader.load(string),
+                });
+            }
+            //console.log(material);
+            return material;
+        }
+
+        function initCards() {
+            let card;
+
+            for (let i = 1; i <= 13; i++) {
+                card = new Card(i, 1);
+                deck.push(card);
+            }
+            for (let i = 1; i <= 13; i++) {
+                card = new Card(i, 2);
+                deck.push(card);
+            }
+            for (let i = 1; i <= 13; i++) {
+                card = new Card(i, 3);
+                deck.push(card);
+            }
+            for (let i = 1; i <= 13; i++) {
+                card = new Card(i, 4);
+                deck.push(card);
+            }
+
+            console.log(deck);
+            //testing
+            for (let i = 0; i < deck.length; i++) {
+                console.log("i", i);
+                console.log(deck[i].mesh);
+                deck[i].mesh.rotateX(Math.random());
+                deck[i].mesh.rotateY(Math.random());
+                deck[i].mesh.rotateZ(Math.random());
+                deck[i].mesh.translateX(Math.random());
+                deck[i].mesh.translateY(Math.random());
+            }
+        }
+
+
+        function initTable() {
+            let string1 = 'floor/floor2.png';
+            let geometry = new THREE.BoxGeometry(3, 3, .15);
+            let material = new THREE.MeshPhongMaterial({
+                // Use the map attribute to hold the texture
+                map: loader.load(woodTexture),
+            });
+
+            let mesh = new THREE.Mesh(geometry, material);
+            //mesh.translateZ(-1);
+            console.log(mesh.position);
+
+            scene.add(mesh);
+
+        }
+        // function initGround(){
+        //   let string1 = 'floor/floor1.jpg';
+        //   let geometry = new THREE.PlaneGeometry(10,10);
+        //   let material = new THREE.MeshBasicMaterial({
+        //       // Use the map attribute to hold the texture
+        //       map: loader.load(string1),
+        //     });
+
+        // let mesh = new THREE.Mesh(geometry, material);
+        // mesh.translateZ(-3);
+
+        // scene.add(mesh);
+
+        // }
+
+
+
+
+        initTable();
+        //initCards();
 
 
 
 
 
 
-    function animate() {
-      updateSize();
-      // plane.rotateX(.01);
-      // plane.rotateY(.01);
-      //   cube.rotateX(.01);
-      //   cube.rotateY(.01);
-      requestAnimationFrame(animate);
-      render();
-    }
+        function animate() {
+            updateSize();
+            // plane.rotateX(.01);
+            // plane.rotateY(.01);
+            //   cube.rotateX(.01);
+            //   cube.rotateY(.01);
+            requestAnimationFrame(animate);
+            render();
+        }
 
-    function render() {
-      renderer.render(scene, camera);
-    }
+        function render() {
+            renderer.render(scene, camera);
+        }
 
-    function updateSize() {
-      if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
-        //actually been changed than this if statement is triggered
-        windowWidth = window.innerWidth;
-        windowHeight = window.innerHeight;
-        renderer.setSize(windowWidth, windowHeight);
-      }
-    }
-
-
-    function keyHandlerT(e) {
-      switch (e.keyCode) {
-        case 87: //w
-          bulbLight.translateY(.1);
-          break;
-        case 83: //s
-          bulbLight.translateY(-.1);
-          break;
-        case 68: //d
-          bulbLight.translateX(.1);
-          break;
-        case 65: //a
-          bulbLight.translateX(-.1);
-          break;
-      }
-
-    }
-
-    document.addEventListener("keydown", keyHandlerT, false);
+        function updateSize() {
+            if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
+                //actually been changed than this if statement is triggered
+                windowWidth = window.innerWidth;
+                windowHeight = window.innerHeight;
+                renderer.setSize(windowWidth, windowHeight);
+            }
+        }
 
 
+        function keyHandler(e) {
+            switch (e.keyCode) {
+                case 87: //w
+                    bulbLight.translateY(.1);
+                    break;
+                case 83: //s
+                    bulbLight.translateY(-.1);
+                    break;
+                case 68: //d
+                    bulbLight.translateX(.1);
+                    break;
+                case 65: //a
+                    bulbLight.translateX(-.1);
+                    break;
+                case 76: //L
+                    ambientLightOn = !ambientLightOn;
+                    if (ambientLightOn == true) {
+                        light.visible = true;
+                    }
+                    else {
+                        light.visible = false;
+                    }
+                    break;
+                case 80: //P
+                    pointLightOn = !pointLightOn;
+                    if (pointLightOn == true) {
+                        bulbLight.visible = true;
+                    }
+                    else {
+                        bulbLight.visible = false;
+                    }
+                    break;
+
+            }
+        }
+
+
+        document.addEventListener("keydown", keyHandler, false);
 
 
 
-
-    animate();
-
+        animate();
 
 
-    renderer.render(scene, camera);
-  </script>
+
+        renderer.render(scene, camera);
+    </script>
 </body>
 
 </html>
