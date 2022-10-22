@@ -1,0 +1,31 @@
+EXAMPLES: ----------------------------------------------------------------------------------------------
+
+two point light example
+https://threejs.org/examples/#webgl_shadowmap_pointlight
+
+adding texture to code
+https://threejs.org/examples/#webgl_geometry_cube 
+
+card flip *
+https://codepen.io/Ordomo/pen/QWwMXKQ 
+
+pointerlock example from last project, maybe steal "fall down" logic
+https://threejs.org/examples/?q=lock#misc_controls_pointerlock 
+
+
+
+THREEJS PAGES: -----------------------------------------------------------------------------------------
+
+threejs textures page
+https://threejs.org/manual/#en/textures 
+
+threejs camera
+https://threejs.org/docs/index.html#api/en/cameras/Camera 
+
+threejs point light helper
+https://threejs.org/docs/index.html#api/en/helpers/PointLightHelper 
+
+threejs texture loader
+https://threejs.org/docs/index.html#api/en/loaders/TextureLoader 
+
+
