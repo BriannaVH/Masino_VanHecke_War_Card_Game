@@ -6,7 +6,7 @@
 
 <body>
 
-  <canvas id="myCanvas" width="1300" height="600"></canvas>
+  <canvas id="myCanvas" width="1650" height="700"></canvas>
 
 
   <script type="module">
@@ -28,6 +28,8 @@
     renderer.setClearColor(0x000000);
     // If you want this to span the window, instead of using the myCanvas object, use the window object
     renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight); //Sets the size of the renderer to the entirety of the
+
 
 
 
