@@ -1,0 +1,106 @@
+<html>
+
+<head>
+  <title>Three.js BuffedGeometry Example</title>
+</head>
+
+<body>
+
+  <canvas id="myCanvas" width="1300" height="600"></canvas>
+
+
+  <script type="module">
+
+    import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
+
+    var scene = new THREE.Scene();
+
+    var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
+    camera.position.z = 3;  // Try moving this around!
+    var focal = new THREE.Vector3(0.0, 0.0, 0.0);
+    camera.lookAt(focal);
+    scene.add(camera);
+
+    var renderer = new THREE.WebGLRenderer({ canvas: myCanvas, antialias: true });
+    renderer.setClearColor(0x000000);
+    // If you want this to span the window, instead of using the myCanvas object, use the window object
+    renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
+
+
+
+    // const geometry = new THREE.BoxGeometry(1, 1, 1);
+    // //const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+    // var loader = new THREE.TextureLoader();
+    // const material = new THREE.MeshBasicMaterial({
+    //   // Use the map attribute to hold the texture
+    //   map: loader.load("whiteMarble.jpg"),
+    // });
+    // const plane = new THREE.Mesh(geometry, material);
+    // scene.add(plane);
+
+    const loader = new THREE.TextureLoader();
+
+    const geometry = new THREE.BoxGeometry(2, .01, 1);
+
+    let i = 0;
+
+
+    const materials = [
+      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-1.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-2.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-3.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-4.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-5.jpg') }),
+      new THREE.MeshBasicMaterial({ map: loader.load('https://threejsfundamentals.org/threejs/resources/images/flower-6.jpg') }),
+    ];
+
+    const cube = new THREE.Mesh(geometry, materials[i]);
+    scene.add(cube);
+
+
+    function animate() {
+      // plane.rotateX(.01);
+      // plane.rotateY(.01);
+      cube.rotateX(.01);
+      cube.rotateY(.01);
+      requestAnimationFrame(animate);
+      render();
+    }
+
+    function render() {
+      renderer.render(scene, camera);
+    }
+
+
+    function keyHandlerT(e) {
+      switch (e.keyCode) {
+        case 84:
+          console.log("into key handler");
+          if (i < materials.length) {
+            cube.material = materials[i];
+            i = i + 1;
+          }
+          else {
+            cube.material = materials[i];
+            i = 0;
+          }
+          break;
+      }
+    }
+
+    document.addEventListener("keydown", keyHandlerT, false);
+
+
+
+
+
+
+    animate();
+
+
+
+    renderer.render(scene, camera);
+  </script>
+</body>
+
+</html>
