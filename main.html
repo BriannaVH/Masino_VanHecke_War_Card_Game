@@ -20,9 +20,14 @@
         let deck = [];
         let ambientLightOn = true;
         let pointLightOn = true;
+        let leftMid = new THREE.Vector3(-1.25, 0, .25);
+        let rightMid = new THREE.Vector3(1.25, 0, .25);
+        let centerMid = new THREE.Vector3(0, -1.25, .25);
+        let positions = [leftMid, centerMid, rightMid];
 
 
-        
+        //left player 0, middle player 1. right player 2, we are player 1 in the middle
+
         const shuffleArray = deck => {
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -62,18 +67,15 @@
         camera.position.x = 0;  // Try moving this around!
         camera.position.y = -4;
         camera.position.z = 2;  // Try moving this around!
-        // camera.position.x = 0;  // Try moving this around!
-        // camera.position.y = 0;
-        // camera.position.z = 4;  // Try moving this around!
+        // camera.position.x = 0;  // There are our camera positions
+        // camera.position.y = -4;
+        // camera.position.z = 2;  // Try moving this around!
         var focal = new THREE.Vector3(0.0, 0.0, 0.0);
         camera.lookAt(focal);
         scene.add(camera);
 
         //TEST
-        let geom = new THREE.BoxGeometry(1, 1, 1);
-        let material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-        let mesh = new THREE.Mesh(geom, material);
-        // scene.add(mesh);
+
 
 
 
@@ -115,7 +117,7 @@
         bulbLight.position.set(0, -3, 2);
         bulbLight.castShadow = true;
         scene.add(bulbLight);
-       // console.log(bulbLight);
+        // console.log(bulbLight);
         // const geometry = new THREE.BoxGeometry(1, 1, 1);
         // //const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
         // var loader = new THREE.TextureLoader();
@@ -149,11 +151,12 @@
 
         let players = [];
 
-        function Player(playerID) {
+        function Player(playerID, playerPosition) {
             this.player = playerID;
             this.playerDeck = [];
             this.playing = true;
             this.currentCards = [];
+            this.playerPos = playerPosition;
         }
 
         function Card(value, suit) {
@@ -169,10 +172,21 @@
             this.material = makeMaterial(this.cardValue, this.cardSuit);
 
             this.mesh = new THREE.Mesh(this.geometry, this.material);
+            this.mesh.rotation.x = Math.PI / 2;
+            this.mesh.translateY(5);
             scene.add(this.mesh);
         }
 
         function makeMaterial(value, suit) {
+            const materials = [
+
+                new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }), //this is the front
+                new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }), //this is the back of the card
+                new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                new THREE.MeshBasicMaterial({ color: 0xffffff }),
+            ];
 
             let index = value - 1;
             let string;
@@ -184,6 +198,7 @@
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                materials[3] = material;
             }
             else if (suit == 2) { //Hearts
                 string = hearts[index];
@@ -191,6 +206,7 @@
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                materials[3] = material;
             }
             else if (suit == 3) { //Clubs
                 string = clubs[index];
@@ -198,6 +214,7 @@
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                materials[3] = material;
             }
             else if (suit == 4) { //Diamonds
                 string = diamonds[index];
@@ -205,9 +222,10 @@
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                materials[3] = material;
             }
             //console.log(material);
-            return material;
+            return materials;
         }
 
         function initCards() {
@@ -232,28 +250,35 @@
 
             // console.log(deck);
             //testing
-            for (let i = 0; i < deck.length; i++) {
-               // console.log("i", i);
-                //console.log(deck[i].mesh);
-                deck[i].mesh.rotateX(Math.random());
-                deck[i].mesh.rotateY(Math.random());
-                deck[i].mesh.rotateZ(Math.random());
-                deck[i].mesh.translateX(Math.random());
-                deck[i].mesh.translateY(Math.random());
-            }
+            // for (let i = 0; i < deck.length; i++) {
+            //    // console.log("i", i);
+            //     //console.log(deck[i].mesh);
+            //     deck[i].mesh.rotateX(Math.random());
+            //     deck[i].mesh.rotateY(Math.random());
+            //     deck[i].mesh.rotateZ(Math.random());
+            //     deck[i].mesh.translateX(Math.random());
+            //     deck[i].mesh.translateY(Math.random());
+            // }
         }
 
 
 
 
-        function initPlayers(number){
+        function initPlayers(number) {
             let player;
-            for(let i = 0; i < number; i++){
-                player = new Player(i);
+            for (let i = 0; i < number; i++) {
+                player = new Player(i, positions[i]);
                 players.push(player);
             }
         }
 
+        function testShape() {
+            let geom = new THREE.BoxGeometry(.25, .25, .25);
+            let material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+            let mesh = new THREE.Mesh(geom, material);
+            scene.add(mesh);
+            return mesh;
+        }
 
 
         function initTable() {
@@ -266,25 +291,30 @@
 
             let mesh = new THREE.Mesh(geometry, material);
             //mesh.translateZ(-1);
-           // console.log(mesh.position);
+
+            //     let testLeft = testShape();
+            //     let testRight = testShape();
+            //     let testCenter = testShape();
+
+
+            //     testLeft.translateX(-1.25);
+            //     testRight.translateX(1.25);
+            //     testCenter.translateY(-1.25);
+
+            //    // testCenter.translateZ(-1);
+            //    // testCenter.translateY(5);
+
+
+
+            //     console.log("c ", testCenter.position);
+            //     console.log("l " , testLeft.position);
+            //     console.log("r ",testRight.position);
+
+            //     console.log(mesh.position);
 
             scene.add(mesh);
 
         }
-        // function initGround(){
-        //   let string1 = 'floor/floor1.jpg';
-        //   let geometry = new THREE.PlaneGeometry(10,10);
-        //   let material = new THREE.MeshBasicMaterial({
-        //       // Use the map attribute to hold the texture
-        //       map: loader.load(string1),
-        //     });
-
-        // let mesh = new THREE.Mesh(geometry, material);
-        // mesh.translateZ(-3);
-
-        // scene.add(mesh);
-
-        // }
 
 
 
@@ -297,27 +327,40 @@
 
 
 
-        console.log(deck);
+        //console.log(deck);
 
 
-        function dealCards(deck, players){
+        function dealCards(deck, players) {
             shuffleArray(deck);
-            for(let i = 0; i < deck.length; i++){
-                if(i<=17){
+            for (let i = 0; i < deck.length; i++) {
+                if (i <= 17) {
                     players[0].playerDeck.push(deck[i]);
                 }
-                else if(17<i && i<=34){
+                else if (17 < i && i <= 34) {
                     players[1].playerDeck.push(deck[i]);
                 }
-                else if(i>34){
+                else if (i > 34) {
                     players[2].playerDeck.push(deck[i]);
                 }
             }
 
 
+            placeCards(players);
         }
 
-        console.log(deck);
+
+
+        function placeCards(players) {
+            for (let i = 0; i < players.length; i++) {
+                for (let x = 0; x < players[i].playerDeck.length; x++) {
+                    //  console.log(players[i].playerDeck[x]);
+                    players[i].playerDeck[x].mesh.position.set(players[i].playerPos.x, players[i].playerPos.y, players[i].playerPos.z);
+                }
+            }
+
+        }
+
+        //  console.log(deck);
 
 
 
@@ -329,6 +372,8 @@
             // plane.rotateY(.01);
             //   cube.rotateX(.01);
             //   cube.rotateY(.01);
+            console.log(deck[0]);
+            deck[0].mesh.rotateX(.1);
             requestAnimationFrame(animate);
             render();
         }
