@@ -20,10 +20,11 @@
         let deck = [];
         let ambientLightOn = true;
         let pointLightOn = true;
-        let leftMid = new THREE.Vector3(-1.25, 0, .25);
-        let rightMid = new THREE.Vector3(1.25, 0, .25);
-        let centerMid = new THREE.Vector3(0, -1.25, .25);
+        let leftMid = new THREE.Vector3(-1.25, 0, 0);
+        let rightMid = new THREE.Vector3(1.25, 0, 0);
+        let centerMid = new THREE.Vector3(0, -1.25, 0);
         let positions = [leftMid, centerMid, rightMid];
+
 
 
         //left player 0, middle player 1. right player 2, we are player 1 in the middle
@@ -345,16 +346,28 @@
             }
 
 
+
+            rotateCards(players[0]);
+            rotateCards(players[2]);
             placeCards(players);
         }
 
 
 
         function placeCards(players) {
+            let playerX;
+            let playerY;
+            let playerZ;
             for (let i = 0; i < players.length; i++) {
+                let height = .1;
                 for (let x = 0; x < players[i].playerDeck.length; x++) {
+                    height += .013;
+                    playerX = players[i].playerPos.x;
+                    playerY = players[i].playerPos.y;
+                    playerZ = players[i].playerPos.z;
                     //  console.log(players[i].playerDeck[x]);
-                    players[i].playerDeck[x].mesh.position.set(players[i].playerPos.x, players[i].playerPos.y, players[i].playerPos.z);
+                    players[i].playerDeck[x].mesh.position.set(playerX, playerY, height);
+                    // players[i].playerPos = new THREE.Vector3(playerX, playerY, lastHeight+.1);
                 }
             }
 
@@ -363,6 +376,11 @@
         //  console.log(deck);
 
 
+        function rotateCards(player) {
+            for (let i = 0; i < player.playerDeck.length; i++) {
+                player.playerDeck[i].mesh.rotation.y = Math.PI / 2;
+            }
+        }
 
 
 
@@ -372,8 +390,10 @@
             // plane.rotateY(.01);
             //   cube.rotateX(.01);
             //   cube.rotateY(.01);
-            console.log(deck[0]);
-            deck[0].mesh.rotateX(.1);
+            //    console.log(deck[0]);
+            players[0].playerDeck[0].mesh.rotateX(.01);
+            players[1].playerDeck[0].mesh.rotateX(.01);
+            players[2].playerDeck[0].mesh.rotateX(.01);
             requestAnimationFrame(animate);
             render();
         }
@@ -425,6 +445,9 @@
                         bulbLight.visible = false;
                     }
                     break;
+                case 78:
+                    console.log("n");
+
 
             }
         }
