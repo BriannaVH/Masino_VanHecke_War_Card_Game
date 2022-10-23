@@ -24,6 +24,7 @@
         let rightMid = new THREE.Vector3(1.25, 0, 0);
         let centerMid = new THREE.Vector3(0, -1.25, 0);
         let positions = [leftMid, centerMid, rightMid];
+        var enableWar = 0;
 
 
 
@@ -412,6 +413,56 @@
         }
 
 
+
+
+
+
+        function compareCards(players, firstWar) {
+            let playedCards = []
+            for (let i = 0; i < players.length; i++) {
+                console.log("player deck before ", players[i].playerDeck);
+                console.log("current cards before ", players[i].currentCards);
+                //  console.log(players[i].playerDeck[0].cardValue);
+                if (firstWar == true) {
+                    players[i].currentCards.push(players[i].playerDeck.pop());
+                }
+                else {
+                    players[i].currentCards.push(players[i].playerDeck.pop());
+                    players[i].currentCards.push(players[i].playerDeck.pop());
+                }
+                playedCards.push(players[i].currentCards[0].cardValue);
+
+
+                console.log("current cards ", players[i].currentCards);
+                
+                console.log("player deck ", players[i].playerDeck);
+
+
+            }
+            let war = -1;
+            let max = -1;
+            for (let i = 0; i < playedCards.length; i++) {
+                if (playedCards[i] == max) {
+                    //console.log("war triggered");
+                    war = max;
+                }
+                if (playedCards[i] > max) {
+                    max = playedCards[i];
+                }
+            }
+            if (max == war) {
+                enableWar = 1;
+                console.log("into war == max");
+                console.log(enableWar);
+            }
+            else {
+                enableWar = 0;
+            }
+            console.log(playedCards);
+            return max;
+        }
+
+
         function keyHandler(e) {
             switch (e.keyCode) {
                 case 87: //w
@@ -446,8 +497,18 @@
                     }
                     break;
                 case 78:
-                    console.log("n");
-
+                    let winner = compareCards(players, true);
+                    console.log("enable war ", enableWar);
+                    if (enableWar == 1) {
+                        console.log("War");
+                        let win = compareCards(players, false);
+                        //every player puts down 1 card upside down, 1 card right side up on top, compare again
+                    }
+                        console.log("someone wins ", winner);
+                        for(let i = 0; i < players.length; i++){
+                            players[i].currentCards = [];
+                        }
+                        //all cards go to player with the index of the max value
 
             }
         }

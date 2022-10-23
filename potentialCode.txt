@@ -49,7 +49,8 @@ shuffle deck code
 https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj#:~:text=The%20first%20and%20simplest%20way,)%20%3D%3E%200.5%20%2D%20Math. 
 
 
-
+get max in array
+https://bobbyhadz.com/blog/javascript-get-index-of-max-value-in-array 
 
 
 used, deleted, maybe recycled ------------------------------------------------------------------------
