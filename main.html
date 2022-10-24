@@ -153,6 +153,7 @@
 
 
         let players = [];
+        let checkPlayerDecks = [];
 
         function Player(playerID, playerPosition) {
             this.player = playerID;
@@ -273,6 +274,7 @@
                 player = new Player(i, positions[i]);
                 players.push(player);
             }
+            checkPlayerDecks = players; 
         }
 
         function testShape() {
@@ -349,8 +351,11 @@
 
 
 
+
             rotateCards(players[0]);
             rotateCards(players[2]);
+            console.log("player id to rotate", players[0].player);
+            console.log("player id to rotate", players[2].player);
             placeCards(players);
         }
 
@@ -381,6 +386,12 @@
         function rotateCards(player) {
             for (let i = 0; i < player.playerDeck.length; i++) {
                 player.playerDeck[i].mesh.rotation.y = Math.PI / 2;
+            }
+        }
+
+        function rotateForCenter(player) {
+            for (let i = 0; i < player.playerDeck.length; i++) {
+                player.playerDeck[i].mesh.rotation.y = Math.PI;
             }
         }
 
@@ -433,7 +444,7 @@
                     // console.log("greater");
                     max = cardsInPlay[y].cardValue;
                 }
-               // console.log("missed both");
+                // console.log("missed both");
             }
             // console.log("m check ", max);
             // console.log("w check ", war);
@@ -471,6 +482,9 @@
 
             if (players.length == 1) {
                 console.log("WINNER WINNER CHICKEN DINNER");
+                for(let i = 0; i < checkPlayerDecks.length; i++){
+                    console.log("deck at the end ", checkPlayerDecks[i].playerDeck);
+                }
                 gameOver = true;
             }
 
@@ -522,7 +536,7 @@
                 spoils = spoils.concat(players[i].currentCards);
                 players[i].currentCards = [];
             }
-            
+
             console.log("spoils of war ", spoils);
             console.log("winner ", winner);
             for (let i = 0; i < spoils.length; i++) {
@@ -553,7 +567,15 @@
                 }
                 else {
                     distributeWinnings(state, players);
+                    placeCards(players);
                     for (let i = 0; i < players.length; i++) {
+                        if (players[i].player == 0 || players[i].player == 2) {
+                            console.log(" player id ", players[i].player);
+                            rotateCards(players[i]);
+                        }
+                        else if (players[i].player == 1) {
+                            rotateForCenter(players[i]);
+                        }
                         console.log(i, " player deck length ", players[i].playerDeck.length);
                     }
                 }
@@ -820,7 +842,7 @@
                         //retryCompare(players, true);
                         makeMove(players, false);
                     }
-  
+
 
                 // if (enableWar == true) {
                 //     retryCompare(players, true);
