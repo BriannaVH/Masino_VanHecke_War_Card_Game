@@ -178,18 +178,19 @@
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.rotation.x = Math.PI / 2;
             this.mesh.translateY(5);
+            
             scene.add(this.mesh);
         }
 
         function makeMaterial(value, suit) {
             const materials = [
 
-                new THREE.MeshBasicMaterial({ color: 0xffffff }),
-                new THREE.MeshBasicMaterial({ color: 0xffffff }),
-                new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }), //this is the front
-                new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }), //this is the back of the card
-                new THREE.MeshBasicMaterial({ color: 0xffffff }),
-                new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                new THREE.MeshPhongMaterial({ color: 0xffffff }),
+                new THREE.MeshPhongMaterial({ color: 0xffffff }),
+                new THREE.MeshPhongMaterial({ map: loader.load(backOfCard) }), //this is the front
+                new THREE.MeshPhongMaterial({ map: loader.load(backOfCard) }), //this is the back of the card
+                new THREE.MeshPhongMaterial({ color: 0xffffff }),
+                new THREE.MeshPhongMaterial({ color: 0xffffff }),
             ];
 
             let index = value - 1;
