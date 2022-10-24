@@ -25,6 +25,7 @@
         let centerMid = new THREE.Vector3(0, -1.25, 0);
         let positions = [leftMid, centerMid, rightMid];
         var enableWar = 0;
+        var gameOver = false;
 
 
 
@@ -392,9 +393,9 @@
             //   cube.rotateX(.01);
             //   cube.rotateY(.01);
             //    console.log(deck[0]);
-            players[0].playerDeck[0].mesh.rotateX(.01);
-            players[1].playerDeck[0].mesh.rotateX(.01);
-            players[2].playerDeck[0].mesh.rotateX(.01);
+            for(let i = 0; i < players.length; i++){
+                players[i].playerDeck[0].mesh.rotateX(.01);
+            }
             requestAnimationFrame(animate);
             render();
         }
@@ -414,28 +415,167 @@
 
 
 
+        function retryCompare(players, startWar) {
+
+
+            let index = -1;
+
+            for (let i = 0; i < players.length; i++) {
+                console.log(i, " player deck ", players[i].playerDeck.length);
+                if (players[i].playerDeck.length == 0) {
+                    // console.log("remove player");
+                    index = i;
+                    // players = players.splice(i, 1);
+                    // console.log("remaining players ", players);
+                    // console.log(players.length, " players left");
+                }
+            }
+            if (index > -1) {
+                console.log("remove player ", players);
+                players.splice(index, 1);
+                console.log("remaining players ", players);
+                console.log(players.length, " players left");
+            }
+
+            if (players.length == 1) {
+                console.log("WINNER WINNER CHICKEN DINNER");
+            }
+
+
+
+            let cardsInPlay = [];
+            if (startWar == true) {
+                for (let i = 0; i < players.length; i++) {
+                    let topCard = players[i].playerDeck.pop();
+                    //console.log(topCard);
+                    players[i].currentCards.unshift(topCard);
+                    cardsInPlay.push(topCard.cardValue);
+
+                    //   console.log(i, " player current ", players[i].currentCards);
+                }
+                //   console.log("cards at play ", cardsInPlay);
+            }
+            else {
+                for (let i = 0; i < players.length; i++) {
+                    let topCard = players[i].playerDeck.pop();
+                    // console.log(topCard);
+                    players[i].currentCards.unshift(topCard);
+                    topCard = players[i].playerDeck.pop();
+                    //console.log(topCard);
+                    players[i].currentCards.unshift(topCard);
+                    cardsInPlay.push(topCard.cardValue);
+
+                    // console.log(i, " player current ", players[i].currentCards);
+                }
+                //  console.log("cards at play ", cardsInPlay);
+
+            }
+
+            let war = 0;
+            let max = 0;
+            for (let y = 0; y < cardsInPlay.length; y++) {
+                //console.log("check ", cardsInPlay[y]);
+                if (cardsInPlay[y] == max) {
+                    // console.log("equal");
+                    war = max;
+                }
+                if (cardsInPlay[y] > max) {
+                    // console.log("greater");
+                    max = cardsInPlay[y];
+                }
+
+
+            }
+
+            //  console.log("m check ", max);
+            // console.log("w check ", war);
+            if (max == war) {
+                console.log("CALL COMPARE AGAIN");
+                max = retryCompare(players, false);
+                //console.log("war with ", war);
+
+            }
+            else {
+                let spoils = [];
+                let winner;
+                let losers = [];
+                for (let i = 0; i < players.length; i++) {
+                    console.log(i, " current cards ", players[i].currentCards);
+                    let card = players[i].currentCards[0];
+                    // console.log("player value ", card.cardValue);
+                    // console.log("winning value ", max);
+                    if (card.cardValue == max) {
+                        winner = players[i];
+                    }
+                    else {
+                        losers.push(i);
+                    }
+
+                    //console.log(i, " precheck current cards " , players[i].currentCards);
+                    spoils = spoils.concat(players[i].currentCards);
+                    // let card = players[i].currentCards.pop();
+                    // console.log("card ", card);
+                    //console.log("cardvalue ", card.cardValue);
+                    //console.log("max ", max);
+                    players[i].currentCards = [];
+                    // spoils.unshift(card);
+                    //console.log("player current ", players[i].currentCards);
+                    // console.log(i, " player deck ", players[i].playerDeck.length);
+                }
+                //console.log("spoils ", spoils);
+                console.log("spoils of war ", spoils);
+                console.log("winner ", winner);
+                for (let i = 0; i < spoils.length; i++) {
+                    winner.playerDeck.unshift(spoils[i]);
+                }
+                // console.log("winner ", winner);
+                console.log("winner deck ", winner.playerDeck.length);
+                for (let i = 0; i < losers.length; i++) {
+
+                    console.log("loser deck ", players[losers[i]].playerDeck.length);
+                }
+
+
+
+                for (let i = 0; i < players.length; i++) {
+                    console.log(i, " check decks ", players[i].playerDeck.length);
+
+                }
+
+
+                console.log("winner with ", max);
+            }
+            return max;
+
+        }
+
+        //  retryCompare(players, false);
+
+
+
+
+
 
 
 
         function compareCards(players, firstWar) {
-            let playedCards = []
+            let playedCards = [];
             for (let i = 0; i < players.length; i++) {
                 console.log("player deck before ", players[i].playerDeck);
                 console.log("current cards before ", players[i].currentCards);
                 //  console.log(players[i].playerDeck[0].cardValue);
                 if (firstWar == true) {
-                    players[i].currentCards.push(players[i].playerDeck.pop());
+                    players[i].currentCards.unshift(players[i].playerDeck.pop());
                 }
                 else {
-                    players[i].currentCards.push(players[i].playerDeck.pop());
-                    players[i].currentCards.push(players[i].playerDeck.pop());
+                    players[i].currentCards.unshift(players[i].playerDeck.pop());
+                    players[i].currentCards.unshift(players[i].playerDeck.pop());
                 }
-                playedCards.push(players[i].currentCards[0].cardValue);
+                console.log("next card value ", players[i].currentCards[players[i].currentCards.length - 1].cardValue);
+                playedCards.push(players[i].currentCards[players[i].currentCards.length - 1].cardValue);
 
-
-                console.log("current cards ", players[i].currentCards);
-                
-                console.log("player deck ", players[i].playerDeck);
+                console.log("current cards after ", players[i].currentCards);
+                console.log("player deck after ", players[i].playerDeck);
 
 
             }
@@ -461,6 +601,15 @@
             console.log(playedCards);
             return max;
         }
+
+
+
+
+
+
+
+
+
 
 
         function keyHandler(e) {
@@ -497,18 +646,48 @@
                     }
                     break;
                 case 78:
-                    let winner = compareCards(players, true);
-                    console.log("enable war ", enableWar);
-                    if (enableWar == 1) {
-                        console.log("War");
-                        let win = compareCards(players, false);
-                        //every player puts down 1 card upside down, 1 card right side up on top, compare again
+                    if(gameOver == false){
+                        retryCompare(players, true);
                     }
-                        console.log("someone wins ", winner);
-                        for(let i = 0; i < players.length; i++){
-                            players[i].currentCards = [];
-                        }
-                        //all cards go to player with the index of the max value
+                    else{
+                        console.log("winner is ", players[0]);
+                    }
+                   
+                // if (enableWar == true) {
+                //     retryCompare(players, true);
+                // }
+                // else {
+                //     retryCompare(players, false);
+                // }
+                //         let winner = compareCards(players, true);
+                //         console.log("enable war ", enableWar);
+                //         if (enableWar == 1) {
+                //             console.log("War");
+                //             for (let i = 0; i < players.length; i++) {
+                //                 players[i].currentCards = [];
+                //             }
+                //             let win = compareCards(players, false);
+                //             //every player puts down 1 card upside down, 1 card right side up on top, compare again
+                //         }
+
+                //         console.log("someone wins ", winner);
+                //         let allCards = [];
+                //         for (let i = 0; i < players.length; i++) {
+                //             allCards.unshift(players[i].currentCards);
+                //         }
+                //         console.log("cards after match ", allCards);
+                //         for (let i = 0; i < players.length; i++) {
+                //             console.log(winner);
+                //             console.log(players[i].currentCards[0].cardValue);
+                //             if (players[i].currentCards[0].cardValue == winner){
+                //                 for(let x = 0; x < players[i].currentCards.length; x++){
+                //                     players[i].playerDeck.unshift(players[i].currentCards[x]);
+                //                 }
+                //                 console.log("final player deck ", players[i].playerDeck);
+                //             }
+                //             players[i].currentCards = [];
+                //         }
+                //     //all cards go to player with the index of the max value
 
             }
         }
