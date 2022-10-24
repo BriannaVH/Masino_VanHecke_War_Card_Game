@@ -393,9 +393,9 @@
             //   cube.rotateX(.01);
             //   cube.rotateY(.01);
             //    console.log(deck[0]);
-            for(let i = 0; i < players.length; i++){
-                players[i].playerDeck[0].mesh.rotateX(.01);
-            }
+            // for(let i = 0; i < players.length; i++){
+            //     players[i].playerDeck[0].mesh.rotateX(.01);
+            // }
             requestAnimationFrame(animate);
             render();
         }
@@ -414,14 +414,184 @@
         }
 
 
+        //in: array [1,2,3] 
+        //out: max
+        function findWinOrWar(cardsInPlay) {
+            let wars = -10;
+            let max = 0;
+            for (let y = 0; y < cardsInPlay.length; y++) {
+                console.log("war: ", wars);
+                console.log("max: ", max);
+                console.log("card ", cardsInPlay[y].cardValue);
+                //console.log("check ", cardsInPlay[y]);
+                if (cardsInPlay[y].cardValue == max) {
+                    console.log("equal");
+                    wars = max;
+                }
+                if (cardsInPlay[y].cardValue > max) {
+                    console.log("greater");
+                    // console.log("greater");
+                    max = cardsInPlay[y].cardValue;
+                }
+               // console.log("missed both");
+            }
+            // console.log("m check ", max);
+            // console.log("w check ", war);
+            if (max == wars) {
+                console.log("CALL COMPARE AGAIN");
+                max = -1;
+                //console.log("war with ", war);
+            }
+            console.log("max is ", max);
+            return max;
+        }
 
+
+        //in: array of players [0.1.2]
+        //out: num players left
+        function checkPlayers(players) {
+            let index = -1;
+
+            for (let i = 0; i < players.length; i++) {
+                // console.log(i, " player deck ", players[i].playerDeck.length);
+                if (players[i].playerDeck.length == 0) {
+                    // console.log("remove player");
+                    index = i;
+                    // players = players.splice(i, 1);
+                    // console.log("remaining players ", players);
+                    // console.log(players.length, " players left");
+                }
+            }
+            if (index > -1) {
+                console.log("remove player ", players);
+                players.splice(index, 1);
+                console.log("remaining players ", players);
+                console.log(players.length, " players left");
+            }
+
+            if (players.length == 1) {
+                console.log("WINNER WINNER CHICKEN DINNER");
+                gameOver = true;
+            }
+
+            return players.length;
+
+
+        }
+
+
+
+        //in: players array
+        //out: an array of playing cards [1.2.3]
+        function getCardsInPlay(players) {
+            let cardsInPlay = [];
+            for (let i = 0; i < players.length; i++) {
+                cardsInPlay.push(players[i].currentCards[0]);
+            }
+            console.log("cards in play ", cardsInPlay);
+            return cardsInPlay;
+        }
+
+        //in player
+        //out nothing
+        function moveOneCard(players) {
+            for (let i = 0; i < players.length; i++) {
+                let topCard = players[i].playerDeck.pop();
+                players[i].currentCards.unshift(topCard);
+            }
+        }
+
+        //in: players
+        //out: none
+        function distributeWinnings(state, players) {
+            console.log("state aka max", state);
+            let spoils = [];
+            let winner;
+            let losers = [];
+            console.log("p len ", players.length);
+            for (let i = 0; i < players.length; i++) {
+                let card = players[i].currentCards[0];
+                console.log("card in distribute ", card);
+                if (card.cardValue == state) {
+                    winner = players[i];
+                }
+                else {
+                    losers.push(i);
+                }
+                console.log("player cards ", players[i].currentCards);
+                spoils = spoils.concat(players[i].currentCards);
+                players[i].currentCards = [];
+            }
+            
+            console.log("spoils of war ", spoils);
+            console.log("winner ", winner);
+            for (let i = 0; i < spoils.length; i++) {
+                winner.playerDeck.unshift(spoils[i]);
+            }
+        }
+
+
+
+
+
+        function makeMove(players, isThisWar) {
+            let check = checkPlayers(players);
+            if (check > 1) {
+                if (isThisWar == false) {
+                    moveOneCard(players);
+                }
+                else {
+                    moveOneCard(players)
+                    moveOneCard(players);
+                }
+
+                let cards = getCardsInPlay(players);
+                let state = findWinOrWar(cards);
+                if (state == -1) {
+                    console.log("War has begun");
+                    makeMove(players, true);
+                }
+                else {
+                    distributeWinnings(state, players);
+                    for (let i = 0; i < players.length; i++) {
+                        console.log(i, " player deck length ", players[i].playerDeck.length);
+                    }
+                }
+            }
+            else {
+                console.log("one player remains");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //startwar: false=regular, true=war regular: put on card in current, war = put 2 cards in current
         function retryCompare(players, startWar) {
-
 
             let index = -1;
 
             for (let i = 0; i < players.length; i++) {
-                console.log(i, " player deck ", players[i].playerDeck.length);
+                // console.log(i, " player deck ", players[i].playerDeck.length);
                 if (players[i].playerDeck.length == 0) {
                     // console.log("remove player");
                     index = i;
@@ -500,7 +670,7 @@
                 let winner;
                 let losers = [];
                 for (let i = 0; i < players.length; i++) {
-                    console.log(i, " current cards ", players[i].currentCards);
+                    // console.log(i, " current cards ", players[i].currentCards);
                     let card = players[i].currentCards[0];
                     // console.log("player value ", card.cardValue);
                     // console.log("winning value ", max);
@@ -523,27 +693,27 @@
                     // console.log(i, " player deck ", players[i].playerDeck.length);
                 }
                 //console.log("spoils ", spoils);
-                console.log("spoils of war ", spoils);
-                console.log("winner ", winner);
+                //console.log("spoils of war ", spoils);
+                //console.log("winner ", winner);
                 for (let i = 0; i < spoils.length; i++) {
                     winner.playerDeck.unshift(spoils[i]);
                 }
                 // console.log("winner ", winner);
-                console.log("winner deck ", winner.playerDeck.length);
-                for (let i = 0; i < losers.length; i++) {
+                //  console.log("winner deck ", winner.playerDeck.length);
+                // for (let i = 0; i < losers.length; i++) {
 
-                    console.log("loser deck ", players[losers[i]].playerDeck.length);
-                }
-
-
-
-                for (let i = 0; i < players.length; i++) {
-                    console.log(i, " check decks ", players[i].playerDeck.length);
-
-                }
+                //    // console.log("loser deck ", players[losers[i]].playerDeck.length);
+                // }
 
 
-                console.log("winner with ", max);
+
+                // for (let i = 0; i < players.length; i++) {
+                //   //  console.log(i, " check decks ", players[i].playerDeck.length);
+
+                // }
+
+
+                // console.log("winner with ", max);
             }
             return max;
 
@@ -646,13 +816,12 @@
                     }
                     break;
                 case 78:
-                    if(gameOver == false){
-                        retryCompare(players, true);
+                    if (gameOver == false) {
+                        //retryCompare(players, true);
+                        makeMove(players, false);
                     }
-                    else{
-                        console.log("winner is ", players[0]);
-                    }
-                   
+  
+
                 // if (enableWar == true) {
                 //     retryCompare(players, true);
                 // }
