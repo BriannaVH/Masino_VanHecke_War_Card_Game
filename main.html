@@ -26,6 +26,7 @@
         var enableWar = 0;
         var gameOver = false;
         let shadowCamera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
+        let toggleUp, toggleRotate, toggleMoveForward, toggleDown = false;
 
 
 
@@ -87,7 +88,7 @@
 
         const light = new THREE.AmbientLight(0x0000ff, 1); // soft white light
         scene.add(light);
-       
+
 
         // const plight = new THREE.PointLight(0xa0adaf, 100, 100);
         // plight.position.set(0, 0, 0);
@@ -184,7 +185,7 @@
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.rotation.x = Math.PI / 2;
             this.mesh.translateY(5);
-            
+
             scene.add(this.mesh);
         }
 
@@ -281,7 +282,7 @@
                 player = new Player(i, positions[i]);
                 players.push(player);
             }
-            checkPlayerDecks = players; 
+            checkPlayerDecks = players;
         }
 
         function testShape() {
@@ -356,9 +357,6 @@
                 }
             }
 
-
-
-
             rotateCards(players[0]);
             rotateCards(players[2]);
             console.log("player id to rotate", players[0].player);
@@ -387,8 +385,6 @@
 
         }
 
-        //  console.log(deck);
-
 
         function rotateCards(player) {
             for (let i = 0; i < player.playerDeck.length; i++) {
@@ -406,6 +402,25 @@
 
         function animate() {
             updateSize();
+
+            if (toggleUp == true) {
+                console.log("aqui");
+                moveCardUp();
+            }
+            if (toggleRotate == true) {
+                console.log("HERE");
+                rotate();
+            }
+            if (toggleMoveForward == true) {
+                console.log("move forward");
+                moveForward();
+            }
+            if (toggleDown == true) {
+                console.log("move down");
+                moveDown();
+            }
+
+
             // plane.rotateX(.01);
             // plane.rotateY(.01);
             //   cube.rotateX(.01);
@@ -489,7 +504,7 @@
 
             if (players.length == 1) {
                 console.log("WINNER WINNER CHICKEN DINNER");
-                for(let i = 0; i < checkPlayerDecks.length; i++){
+                for (let i = 0; i < checkPlayerDecks.length; i++) {
                     console.log("deck at the end ", checkPlayerDecks[i].playerDeck);
                 }
                 gameOver = true;
@@ -557,6 +572,8 @@
 
         function makeMove(players, isThisWar) {
             let check = checkPlayers(players);
+
+            console.log('console', players[1].playerDeck[0]);
             if (check > 1) {
                 if (isThisWar == false) {
                     moveOneCard(players);
@@ -573,7 +590,9 @@
                     makeMove(players, true);
                 }
                 else {
+                    console.log('card', players[i].playerDeck[0].mesh);
                     distributeWinnings(state, players);
+
                     placeCards(players);
                     for (let i = 0; i < players.length; i++) {
                         if (players[i].player == 0 || players[i].player == 2) {
@@ -803,9 +822,109 @@
 
 
 
+        function moveCardUp() {
+            for (let i = 0; i <= 2; i++) {
+                let length = players[i].playerDeck.length;
+                let mesh = players[i].playerDeck[length - 1].mesh;
+                if (mesh.position.z <= .5) {
+                    console.log("HELLO");
+                    mesh.position.z += .001;
+                }
+                else {
+                    toggleUp = false;
+                    toggleRotate = true;
+                }
+            }
+        }
 
 
 
+        function rotate() {
+            for (let i = 0; i <= 2; i++) {
+                let length = players[i].playerDeck.length;
+                let mesh = players[i].playerDeck[length - 1].mesh;
+
+                if (mesh.rotation.z >= -3) {
+                    console.log(mesh.rotation.z);
+                    mesh.rotateZ(.01);
+                }
+                else {
+                    console.log("hello");
+                    toggleRotate = false;
+                    toggleMoveForward = true;
+                }
+            }
+        }
+
+        function moveForward() {
+            let left, mid, right = true;
+            for (let i = 0; i <= 2; i++) {
+                let length = players[i].playerDeck.length;
+                let mesh = players[i].playerDeck[length - 1].mesh;
+
+
+                if (i == 0) {
+                    if (mesh.position.x <= -.75) {
+                        console.log('mesh Y', mesh.position.x);
+                        mesh.translateZ(.001);
+                    }
+                    else {
+                        console.log("SHOULD TOGGLE FALSE");
+                        left = false;
+                    }
+                }
+                else if (i == 1) {
+                    if (mesh.position.y <= -.75) {
+                        console.log(mesh.position.z);
+                        mesh.translateZ(-.001);
+                    }
+                    else {
+                        console.log("toggle false");
+                        mid = false;
+
+                    }
+                }
+                else {
+                    if (mesh.position.x >= .75) {
+                        console.log('mesh Y', mesh.position.x);
+                        mesh.translateZ(-.001);
+                    }
+                    else {
+                        console.log("toggle false");
+                        right = false;
+                    }
+
+                }
+                if (left == false && mid == false && right == false) {
+                    toggleMoveForward = false;
+                    toggleDown = true;
+                }
+            }
+        }
+
+        function moveDown(){
+            for (let i = 0; i <= 2; i++) {
+                let length = players[i].playerDeck.length;
+                let mesh = players[i].playerDeck[length - 1].mesh;
+                if (mesh.position.z >= .1) {
+                    console.log("HELLO");
+                    mesh.position.z += -.001;
+                }
+                else {
+                 //   toggleUp = false;
+                     toggleDown = false;
+                     console.log("DONE");
+                }
+
+            }
+
+        }
+
+
+
+        function toggleMovement() {
+            toggleUp = true;
+        }
 
 
 
@@ -847,7 +966,14 @@
                 case 78:
                     if (gameOver == false) {
                         //retryCompare(players, true);
-                        makeMove(players, false);
+                        // for (let i = 0; i < 3; i++) {
+                        //     let length = players[i].playerDeck.length;
+                        //     moveCardUp(players[i].playerDeck[length - 1].mesh);
+
+                        // }
+                        toggleMovement();
+
+                        // makeMove(players, false);
                     }
 
 
