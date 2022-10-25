@@ -52,6 +52,9 @@ https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj#:~:text=The%2
 get max in array
 https://bobbyhadz.com/blog/javascript-get-index-of-max-value-in-array 
 
+moving with timeout 
+https://alvarotrigo.com/blog/wait-1-second-javascript/
+
 
 used, deleted, maybe recycled ------------------------------------------------------------------------
 
