@@ -17,8 +17,6 @@
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
         let deck = [];
-        let ambientLightOn = true;
-        let pointLightOn = true;
         let leftMid = new THREE.Vector3(-1.25, 0, 0);
         let rightMid = new THREE.Vector3(1.25, 0, 0);
         let centerMid = new THREE.Vector3(0, -1.25, 0);
@@ -40,8 +38,6 @@
                 deck[j] = temp;
             }
         }
-
-
 
 
         let woodTexture = 'misc_textures/table.jpg';
@@ -78,14 +74,14 @@
         camera.lookAt(focal);
         scene.add(camera);
 
-  
 
 
 
 
 
-       // #FFC0CB
-       //0x0000ff
+
+        // #FFC0CB
+        //0x0000ff
         const light = new THREE.AmbientLight(0xFF66CC, 1); // soft white light
         scene.add(light);
 
@@ -127,16 +123,7 @@
         shadowCamera.position.y = bulbLight.position.y;
         shadowCamera.position.z = bulbLight.position.z;
         console.log(shadowCamera.position);
-        // console.log(bulbLight);
-        // const geometry = new THREE.BoxGeometry(1, 1, 1);
-        // //const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-        // var loader = new THREE.TextureLoader();
-        // const material = new THREE.MeshBasicMaterial({
-        //   // Use the map attribute to hold the texture
-        //   map: loader.load("whiteMarble.jpg"),
-        // });
-        // const plane = new THREE.Mesh(geometry, material);
-        // scene.add(plane);
+
 
         const loader = new THREE.TextureLoader();
 
@@ -303,27 +290,7 @@
             });
 
             let mesh = new THREE.Mesh(geometry, material);
-            //mesh.translateZ(-1);
 
-            //     let testLeft = testShape();
-            //     let testRight = testShape();
-            //     let testCenter = testShape();
-
-
-            //     testLeft.translateX(-1.25);
-            //     testRight.translateX(1.25);
-            //     testCenter.translateY(-1.25);
-
-            //    // testCenter.translateZ(-1);
-            //    // testCenter.translateY(5);
-
-
-
-            //     console.log("c ", testCenter.position);
-            //     console.log("l " , testLeft.position);
-            //     console.log("r ",testRight.position);
-
-            //     console.log(mesh.position);
 
             scene.add(mesh);
 
@@ -483,35 +450,30 @@
         //in: array of players [0.1.2]
         //out: num players left
         function checkPlayers(players) {
-            let index = -1;
+            let count = 0;
+
 
             for (let i = 0; i < players.length; i++) {
                 // console.log(i, " player deck ", players[i].playerDeck.length);
                 if (players[i].playerDeck.length == 0) {
-                    // console.log("remove player");
-                    index = i;
-                    // players = players.splice(i, 1);
-                    // console.log("remaining players ", players);
-                    // console.log(players.length, " players left");
+                    players[i].playing = false;
+                    if (players[i].playing == false) {
+                        count++;
+                    }
                 }
             }
-            if (index > -1) {
-                console.log("remove player ", players);
-                players.splice(index, 1);
-                console.log("remaining players ", players);
-                console.log(players.length, " players left");
-            }
 
-            if (players.length == 1) {
+            if (count == 2) {
                 console.log("WINNER WINNER CHICKEN DINNER");
-                for (let i = 0; i < checkPlayerDecks.length; i++) {
-                    console.log("deck at the end ", checkPlayerDecks[i].playerDeck);
+                for (let i = 0; i < players.length; i++) {
+                    console.log("deck at the end ", players[i].playerDeck);
                 }
                 gameOver = true;
+                return false;
             }
-
-            return players.length;
-
+            else {
+                return true;
+            }
 
         }
 
@@ -526,7 +488,7 @@
         }
 
         function tryFlip(card) {
-            card.mesh.rotateX(3.15);
+            card.mesh.rotateY(3.15);
         }
 
         function tryMoveForward(card) {
@@ -540,7 +502,7 @@
             });
         }
 
-        async  function tryLoop(id, card) {
+        async function tryLoop(id, card) {
             let i = 0;
             while (i < 20) {
                 await delay(100);
@@ -550,18 +512,18 @@
             trySpin(id, card);
         }
 
-        async  function trySpin(id, card) {
+        async function trySpin(id, card) {
             let i = 0;
             while (i < 30) {
                 await delay(100);
-                if (id == 1){
+                if (id == 1) {
                     card.mesh.rotateX(-.5);
                 }
-                else{
+                else {
                     card.mesh.rotateZ(-.05);
- 
+
                 }
-               
+
                 i++;
             }
         }
@@ -571,14 +533,14 @@
         function getCardsInPlay(players) {
             let cardsInPlay = [];
             for (let i = 0; i < players.length; i++) {
-                cardsInPlay.push(players[i].currentCards[0]);
-                console.log("player current card ", players[i].currentCards[0]);
-                // tryMoveVertical(players[i].currentCards[0], -1);
-                // tryFlip(players[i].currentCards[0]);
-                //tryMoveForward(players[i].currentCards[0]);
-                tryLoop(players[i].player, players[i].currentCards[0]);
-
-                
+                if (players[i].playing == true) {
+                    cardsInPlay.push(players[i].currentCards[0]);
+                    console.log("player current card ", players[i].currentCards[0]);
+                    // tryMoveVertical(players[i].currentCards[0], -1);
+                    // tryFlip(players[i].currentCards[0]);
+                    //tryMoveForward(players[i].currentCards[0]);
+                    //tryLoop(players[i].player, players[i].currentCards[0]);
+                }
             }
             //toggleMovement();
 
@@ -589,8 +551,10 @@
         //out nothing
         function moveOneCard(players) {
             for (let i = 0; i < players.length; i++) {
-                let topCard = players[i].playerDeck.pop();
-                players[i].currentCards.unshift(topCard);
+                if (players[i].playing == true) {
+                    let topCard = players[i].playerDeck.pop();
+                    players[i].currentCards.unshift(topCard);
+                }
             }
         }
 
@@ -603,17 +567,21 @@
             let losers = [];
             console.log("p len ", players.length);
             for (let i = 0; i < players.length; i++) {
-                let card = players[i].currentCards[0];
-                console.log("card in distribute ", card);
-                if (card.cardValue == state) {
-                    winner = players[i];
+                if (players[i].playing == true) {
+                    let card = players[i].currentCards[0];
+
+                    console.log("card in distribute ", card);
+                    if (card.cardValue == state) {
+                        winner = players[i];
+                    }
+                    else {
+                        losers.push(i);
+                    }
+                    console.log("player cards ", players[i].currentCards);
+                    spoils = spoils.concat(players[i].currentCards);
+                    players[i].currentCards = [];
                 }
-                else {
-                    losers.push(i);
-                }
-                console.log("player cards ", players[i].currentCards);
-                spoils = spoils.concat(players[i].currentCards);
-                players[i].currentCards = [];
+
             }
 
             console.log("spoils of war ", spoils);
@@ -631,7 +599,7 @@
             let check = checkPlayers(players);
 
             console.log('console', players[1].playerDeck[0]);
-            if (check > 1) {
+            if (check == true) {
                 if (isThisWar == false) {
                     moveOneCard(players);
                 }
@@ -647,19 +615,22 @@
                     makeMove(players, true);
                 }
                 else {
-                    console.log('card', players[i].playerDeck[0].mesh);
+                   // console.log('card', players[i].playerDeck[0].mesh);
                     distributeWinnings(state, players);
 
-                    // placeCards(players);
+                    placeCards(players);
                     for (let i = 0; i < players.length; i++) {
-                        if (players[i].player == 0 || players[i].player == 2) {
-                            console.log(" player id ", players[i].player);
-                            // rotateCards(players[i]);
+                        if (players[i].playing == true) {
+                            if (players[i].player == 0 || players[i].player == 2) {
+                                console.log(" player id ", players[i].player);
+                                rotateCards(players[i]);
+                            }
+                            else if (players[i].player == 1) {
+                                rotateForCenter(players[i]);
+                            }
+                            console.log(i, " player deck length ", players[i].playerDeck.length);
                         }
-                        else if (players[i].player == 1) {
-                            // rotateForCenter(players[i]);
-                        }
-                        console.log(i, " player deck length ", players[i].playerDeck.length);
+
                     }
                 }
             }
@@ -690,141 +661,6 @@
 
 
 
-        //startwar: false=regular, true=war regular: put on card in current, war = put 2 cards in current
-        function retryCompare(players, startWar) {
-
-            let index = -1;
-
-            for (let i = 0; i < players.length; i++) {
-                // console.log(i, " player deck ", players[i].playerDeck.length);
-                if (players[i].playerDeck.length == 0) {
-                    // console.log("remove player");
-                    index = i;
-                    // players = players.splice(i, 1);
-                    // console.log("remaining players ", players);
-                    // console.log(players.length, " players left");
-                }
-            }
-            if (index > -1) {
-                console.log("remove player ", players);
-                players.splice(index, 1);
-                console.log("remaining players ", players);
-                console.log(players.length, " players left");
-            }
-
-            if (players.length == 1) {
-                console.log("WINNER WINNER CHICKEN DINNER");
-            }
-
-
-
-            let cardsInPlay = [];
-            if (startWar == true) {
-                for (let i = 0; i < players.length; i++) {
-                    let topCard = players[i].playerDeck.pop();
-                    //console.log(topCard);
-                    players[i].currentCards.unshift(topCard);
-                    cardsInPlay.push(topCard.cardValue);
-
-                    //   console.log(i, " player current ", players[i].currentCards);
-                }
-                //   console.log("cards at play ", cardsInPlay);
-            }
-            else {
-                for (let i = 0; i < players.length; i++) {
-                    let topCard = players[i].playerDeck.pop();
-                    // console.log(topCard);
-                    players[i].currentCards.unshift(topCard);
-                    topCard = players[i].playerDeck.pop();
-                    //console.log(topCard);
-                    players[i].currentCards.unshift(topCard);
-                    cardsInPlay.push(topCard.cardValue);
-
-                    // console.log(i, " player current ", players[i].currentCards);
-                }
-                //  console.log("cards at play ", cardsInPlay);
-
-            }
-
-            let war = 0;
-            let max = 0;
-            for (let y = 0; y < cardsInPlay.length; y++) {
-                //console.log("check ", cardsInPlay[y]);
-                if (cardsInPlay[y] == max) {
-                    // console.log("equal");
-                    war = max;
-                }
-                if (cardsInPlay[y] > max) {
-                    // console.log("greater");
-                    max = cardsInPlay[y];
-                }
-
-
-            }
-
-            //  console.log("m check ", max);
-            // console.log("w check ", war);
-            if (max == war) {
-                console.log("CALL COMPARE AGAIN");
-                max = retryCompare(players, false);
-                //console.log("war with ", war);
-
-            }
-            else {
-                let spoils = [];
-                let winner;
-                let losers = [];
-                for (let i = 0; i < players.length; i++) {
-                    // console.log(i, " current cards ", players[i].currentCards);
-                    let card = players[i].currentCards[0];
-                    // console.log("player value ", card.cardValue);
-                    // console.log("winning value ", max);
-                    if (card.cardValue == max) {
-                        winner = players[i];
-                    }
-                    else {
-                        losers.push(i);
-                    }
-
-                    //console.log(i, " precheck current cards " , players[i].currentCards);
-                    spoils = spoils.concat(players[i].currentCards);
-                    // let card = players[i].currentCards.pop();
-                    // console.log("card ", card);
-                    //console.log("cardvalue ", card.cardValue);
-                    //console.log("max ", max);
-                    players[i].currentCards = [];
-                    // spoils.unshift(card);
-                    //console.log("player current ", players[i].currentCards);
-                    // console.log(i, " player deck ", players[i].playerDeck.length);
-                }
-                //console.log("spoils ", spoils);
-                //console.log("spoils of war ", spoils);
-                //console.log("winner ", winner);
-                for (let i = 0; i < spoils.length; i++) {
-                    winner.playerDeck.unshift(spoils[i]);
-                }
-                // console.log("winner ", winner);
-                //  console.log("winner deck ", winner.playerDeck.length);
-                // for (let i = 0; i < losers.length; i++) {
-
-                //    // console.log("loser deck ", players[losers[i]].playerDeck.length);
-                // }
-
-
-
-                // for (let i = 0; i < players.length; i++) {
-                //   //  console.log(i, " check decks ", players[i].playerDeck.length);
-
-                // }
-
-
-                // console.log("winner with ", max);
-            }
-            return max;
-
-        }
-
-        //  retryCompare(players, false);
 
 
 
@@ -833,49 +669,7 @@
 
 
 
-        function compareCards(players, firstWar) {
-            let playedCards = [];
-            for (let i = 0; i < players.length; i++) {
-                console.log("player deck before ", players[i].playerDeck);
-                console.log("current cards before ", players[i].currentCards);
-                //  console.log(players[i].playerDeck[0].cardValue);
-                if (firstWar == true) {
-                    players[i].currentCards.unshift(players[i].playerDeck.pop());
-                }
-                else {
-                    players[i].currentCards.unshift(players[i].playerDeck.pop());
-                    players[i].currentCards.unshift(players[i].playerDeck.pop());
-                }
-                console.log("next card value ", players[i].currentCards[players[i].currentCards.length - 1].cardValue);
-                playedCards.push(players[i].currentCards[players[i].currentCards.length - 1].cardValue);
 
-                console.log("current cards after ", players[i].currentCards);
-                console.log("player deck after ", players[i].playerDeck);
-
-
-            }
-            let war = -1;
-            let max = -1;
-            for (let i = 0; i < playedCards.length; i++) {
-                if (playedCards[i] == max) {
-                    //console.log("war triggered");
-                    war = max;
-                }
-                if (playedCards[i] > max) {
-                    max = playedCards[i];
-                }
-            }
-            if (max == war) {
-                enableWar = 1;
-                console.log("into war == max");
-                console.log(enableWar);
-            }
-            else {
-                enableWar = 0;
-            }
-            console.log(playedCards);
-            return max;
-        }
 
 
 
@@ -1003,72 +797,21 @@
                     bulbLight.translateX(-.1);
                     break;
                 case 76: //L
-                    ambientLightOn = !ambientLightOn;
-                    if (ambientLightOn == true) {
-                        light.visible = true;
-                    }
-                    else {
-                        light.visible = false;
-                    }
+                    light.visible = !light.visible;
                     break;
                 case 80: //P
-                placeCards(players);
-                    pointLightOn = !pointLightOn;
-                    if (pointLightOn == true) {
-                        bulbLight.visible = true;
-                        bulbLight.position.set(0, -.79, 2);
-                    }
-                    else {
-                        bulbLight.visible = false;
-                    }
+                    //placeCards(players);
+                    bulbLight.visible = !bulbLight.visible;
                     break;
                 case 78:
                     if (gameOver == false) {
-                        //retryCompare(players, true);
-                        // for (let i = 0; i < 3; i++) {
-                        //     let length = players[i].playerDeck.length;
-                        //     moveCardUp(players[i].playerDeck[length - 1].mesh);
-                        // }
+
                         //  toggleMovement();
                         makeMove(players, false);
                     }
 
 
-                // if (enableWar == true) {
-                //     retryCompare(players, true);
-                // }
-                // else {
-                //     retryCompare(players, false);
-                // }
-                //         let winner = compareCards(players, true);
-                //         console.log("enable war ", enableWar);
-                //         if (enableWar == 1) {
-                //             console.log("War");
-                //             for (let i = 0; i < players.length; i++) {
-                //                 players[i].currentCards = [];
-                //             }
-                //             let win = compareCards(players, false);
-                //             //every player puts down 1 card upside down, 1 card right side up on top, compare again
-                //         }
 
-                //         console.log("someone wins ", winner);
-                //         let allCards = [];
-                //         for (let i = 0; i < players.length; i++) {
-                //             allCards.unshift(players[i].currentCards);
-                //         }
-                //         console.log("cards after match ", allCards);
-                //         for (let i = 0; i < players.length; i++) {
-                //             console.log(winner);
-                //             console.log(players[i].currentCards[0].cardValue);
-                //             if (players[i].currentCards[0].cardValue == winner){
-                //                 for(let x = 0; x < players[i].currentCards.length; x++){
-                //                     players[i].playerDeck.unshift(players[i].currentCards[x]);
-                //                 }
-                //                 console.log("final player deck ", players[i].playerDeck);
-                //             }
-                //             players[i].currentCards = [];
-                //         }
-                //     //all cards go to player with the index of the max value
 
             }
         }
