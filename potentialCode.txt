@@ -18,6 +18,9 @@ pointerlock example from last project, maybe steal "fall down" logic
 https://threejs.org/examples/?q=lock#misc_controls_pointerlock 
 
 
+shadow example
+https://r105.threejsfundamentals.org/threejs/lessons/threejs-shadows.html 
+
 
 THREEJS PAGES: -----------------------------------------------------------------------------------------
 

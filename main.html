@@ -78,15 +78,15 @@
         camera.lookAt(focal);
         scene.add(camera);
 
-        //TEST
+  
 
 
 
 
 
-
-
-        const light = new THREE.AmbientLight(0x0000ff, 1); // soft white light
+       // #FFC0CB
+       //0x0000ff
+        const light = new THREE.AmbientLight(0xFF66CC, 1); // soft white light
         scene.add(light);
 
 
@@ -540,23 +540,28 @@
             });
         }
 
-        async  function tryLoop(card) {
+        async  function tryLoop(id, card) {
             let i = 0;
             while (i < 20) {
                 await delay(100);
-                console.log("move a little");
                 card.mesh.translateY(.01);
                 i++;
             }
-            trySpin(card);
+            trySpin(id, card);
         }
 
-        async  function trySpin(card) {
+        async  function trySpin(id, card) {
             let i = 0;
             while (i < 30) {
                 await delay(100);
-                console.log("move a little");
-                card.mesh.rotateX(.05);
+                if (id == 1){
+                    card.mesh.rotateX(-.5);
+                }
+                else{
+                    card.mesh.rotateZ(-.05);
+ 
+                }
+               
                 i++;
             }
         }
@@ -571,6 +576,8 @@
                 // tryMoveVertical(players[i].currentCards[0], -1);
                 // tryFlip(players[i].currentCards[0]);
                 //tryMoveForward(players[i].currentCards[0]);
+                tryLoop(players[i].player, players[i].currentCards[0]);
+
                 
             }
             //toggleMovement();
@@ -584,7 +591,6 @@
             for (let i = 0; i < players.length; i++) {
                 let topCard = players[i].playerDeck.pop();
                 players[i].currentCards.unshift(topCard);
-                tryLoop(players[i].currentCards[0]);
             }
         }
 
@@ -1006,6 +1012,7 @@
                     }
                     break;
                 case 80: //P
+                placeCards(players);
                     pointLightOn = !pointLightOn;
                     if (pointLightOn == true) {
                         bulbLight.visible = true;
@@ -1021,10 +1028,8 @@
                         // for (let i = 0; i < 3; i++) {
                         //     let length = players[i].playerDeck.length;
                         //     moveCardUp(players[i].playerDeck[length - 1].mesh);
-
                         // }
                         //  toggleMovement();
-
                         makeMove(players, false);
                     }
 
