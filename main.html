@@ -27,6 +27,9 @@
         let toggleUp, toggleRotate, toggleMoveForward, toggleDown = false;
 
 
+      
+
+
 
         //left player 0, middle player 1. right player 2, we are player 1 in the middle
 
@@ -140,6 +143,18 @@
             new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
             new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
         ];
+
+        let planeGeometry = new THREE.PlaneGeometry(100,100);
+        let planeMaterial = new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSided });
+        let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        planeMesh.rotateX(45);
+        scene.add(planeMesh);
+        planeMesh.position.set(0,40,-25);
+
+
+
+
+
 
         const testCard = new THREE.Mesh(geometry, materials);
         //scene.add(testCard);
