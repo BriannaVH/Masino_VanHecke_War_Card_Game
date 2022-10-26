@@ -27,7 +27,7 @@
         let toggleUp, toggleRotate, toggleMoveForward, toggleDown = false;
 
 
-      
+
 
 
 
@@ -144,12 +144,12 @@
             new THREE.MeshBasicMaterial({ map: loader.load(backOfCard) }),
         ];
 
-        let planeGeometry = new THREE.PlaneGeometry(100,100);
-        let planeMaterial = new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSided });
+        let planeGeometry = new THREE.PlaneGeometry(100, 100);
+        let planeMaterial = new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg') });
         let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
         planeMesh.rotateX(45);
         scene.add(planeMesh);
-        planeMesh.position.set(0,40,-25);
+        planeMesh.position.set(0, 40, -25);
 
 
 
@@ -165,6 +165,7 @@
         let checkPlayerDecks = [];
 
         function Player(playerID, playerPosition) {
+            this.cardsLeft = true;
             this.player = playerID;
             this.playerDeck = [];
             this.playing = true;
@@ -467,7 +468,6 @@
         function checkPlayers(players) {
             let count = 0;
 
-
             for (let i = 0; i < players.length; i++) {
                 // console.log(i, " player deck ", players[i].playerDeck.length);
                 if (players[i].playerDeck.length == 0) {
@@ -567,38 +567,28 @@
         function moveOneCard(players) {
             for (let i = 0; i < players.length; i++) {
                 if (players[i].playing == true) {
-                    let topCard = players[i].playerDeck.pop();
-                    players[i].currentCards.unshift(topCard);
+                    if (players[i].playerDeck.length == 0) {
+                        players[i].playing = false;
+                    }
+                    else {
+                        let topCard = players[i].playerDeck.pop();
+                        players[i].currentCards.unshift(topCard);
+                    }
+
                 }
             }
         }
 
         //in: players
         //out: none
-        function distributeWinnings(state, players) {
-            console.log("state aka max", state);
+        function distributeWinnings(winner, players) {
             let spoils = [];
-            let winner;
-            let losers = [];
             console.log("p len ", players.length);
             for (let i = 0; i < players.length; i++) {
-                if (players[i].playing == true) {
-                    let card = players[i].currentCards[0];
-
-                    console.log("card in distribute ", card);
-                    if (card.cardValue == state) {
-                        winner = players[i];
-                    }
-                    else {
-                        losers.push(i);
-                    }
-                    console.log("player cards ", players[i].currentCards);
-                    spoils = spoils.concat(players[i].currentCards);
-                    players[i].currentCards = [];
-                }
+                spoils = spoils.concat(players[i].currentCards);
+                players[i].currentCards = [];
 
             }
-
             console.log("spoils of war ", spoils);
             console.log("winner ", winner);
             for (let i = 0; i < spoils.length; i++) {
@@ -612,8 +602,6 @@
 
         function makeMove(players, isThisWar) {
             let check = checkPlayers(players);
-
-            console.log('console', players[1].playerDeck[0]);
             if (check == true) {
                 if (isThisWar == false) {
                     moveOneCard(players);
@@ -630,9 +618,17 @@
                     makeMove(players, true);
                 }
                 else {
-                   // console.log('card', players[i].playerDeck[0].mesh);
-                    distributeWinnings(state, players);
-
+                    let winner;
+                    for (let i = 0; i < players.length; i++) {
+                        if (players[i].playing == true) {
+                            let card = players[i].currentCards[0];
+                            console.log("card in distribute ", card);
+                            if (card.cardValue == state) {
+                                winner = players[i];
+                            }
+                        }
+                    }
+                    distributeWinnings(winner, players);
                     placeCards(players);
                     for (let i = 0; i < players.length; i++) {
                         if (players[i].playing == true) {
@@ -650,6 +646,14 @@
                 }
             }
             else {
+                let winner;
+                for(let i = 0; i < players.length; i++){
+                    if(players[i].player == true){
+                        winner = players[i].player;
+                    }
+                }
+                distributeWinnings(winner, players);
+                placeCards(players);
                 console.log("one player remains");
             }
         }
