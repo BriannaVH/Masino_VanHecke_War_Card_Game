@@ -17,9 +17,9 @@
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
         let deck = [];
-        let leftMid = new THREE.Vector3(-1.25, 0, 0);
-        let rightMid = new THREE.Vector3(1.25, 0, 0);
-        let centerMid = new THREE.Vector3(0, -1.25, 0);
+        let leftMid = new THREE.Vector3(-1.15, .075, 0);
+        let rightMid = new THREE.Vector3(1.15, .075, 0);
+        let centerMid = new THREE.Vector3(-.25, .075, 1.3);
         let positions = [leftMid, centerMid, rightMid];
         var enableWar = 0;
         var gameOver = false;
@@ -68,8 +68,8 @@
 
         var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
         camera.position.x = 0;  // Try moving this around!
-        camera.position.y = -4;
-        camera.position.z = 2;  // Try moving this around!
+        camera.position.y = 2.5;
+        camera.position.z = 4;  // Try moving this around!
         // camera.position.x = 0;  // There are our camera positions
         // camera.position.y = -4;
         // camera.position.z = 2;  // Try moving this around!
@@ -107,6 +107,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight); //Sets the size of the renderer to the entirety of the
 
 
+        console.log("camera position", camera.position);
 
         const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
         // bulbGeometry.position.set(3,0,0);
@@ -118,7 +119,7 @@
             color: 0x000000
         });
         bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
-        bulbLight.position.set(0, -.79, 2);
+        bulbLight.position.set(0, .79, -2);
         bulbLight.castShadow = true;
         scene.add(bulbLight);
 
@@ -145,11 +146,11 @@
         ];
 
         let planeGeometry = new THREE.PlaneGeometry(100, 100);
-        let planeMaterial = new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg') });
+        let planeMaterial = new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSide });
         let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-        planeMesh.rotateX(45);
+        //planeMesh.rotateX(1);
         scene.add(planeMesh);
-        planeMesh.position.set(0, 40, -25);
+        planeMesh.position.set(0, -35, -40);
 
 
 
@@ -182,12 +183,14 @@
             this.cardValue = value;
             this.cardSuit = suit;
 
-            this.geometry = new THREE.BoxGeometry(.2, .01, .4);
+            this.geometry = new THREE.BoxGeometry(.2, .001, .4);
             this.material = makeMaterial(this.cardValue, this.cardSuit);
 
             this.mesh = new THREE.Mesh(this.geometry, this.material);
-            this.mesh.rotation.x = Math.PI / 2;
+            this.mesh.rotation.x = 0;
             this.mesh.translateY(5);
+
+            console.log(this.mesh.rotation.y, 'ROTATION Y ORIGIN');
 
             scene.add(this.mesh);
         }
@@ -290,27 +293,33 @@
 
         function testShape() {
             let geom = new THREE.BoxGeometry(.25, .25, .25);
-            let material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+            let material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
             let mesh = new THREE.Mesh(geom, material);
+            mesh.position.set(0, 0, 0);
             scene.add(mesh);
             return mesh;
         }
 
+        //  testShape();
+
 
         function initTable() {
             let string1 = 'floor/floor2.png';
-            let geometry = new THREE.BoxGeometry(3, 3, .15);
+            let geometry = new THREE.BoxGeometry(3, .15, 3);
             let material = new THREE.MeshPhongMaterial({
                 // Use the map attribute to hold the texture
                 map: loader.load(woodTexture),
-            });
 
+            });
             let mesh = new THREE.Mesh(geometry, material);
 
-
+            console.log(mesh, 'mesh');
             scene.add(mesh);
 
         }
+
+
 
 
 
@@ -340,10 +349,13 @@
                 }
             }
 
-            rotateCards(players[0]);
-            rotateCards(players[2]);
+            setOriginPosition(players);
+
+
+            // rotateCards(players[2]);
             console.log("player id to rotate", players[0].player);
             console.log("player id to rotate", players[2].player);
+            console.log("card placement, ", players[1].playerDeck[0].mesh.position);
             placeCards(players);
         }
 
@@ -361,7 +373,7 @@
                     playerY = players[i].playerPos.y;
                     playerZ = players[i].playerPos.z;
                     //  console.log(players[i].playerDeck[x]);
-                    players[i].playerDeck[x].mesh.position.set(playerX, playerY, height);
+                    players[i].playerDeck[x].mesh.position.set(playerX, playerY + height, playerZ);
                     // players[i].playerPos = new THREE.Vector3(playerX, playerY, lastHeight+.1);
                 }
             }
@@ -369,15 +381,40 @@
         }
 
 
-        function rotateCards(player) {
-            for (let i = 0; i < player.playerDeck.length; i++) {
-                player.playerDeck[i].mesh.rotation.y = Math.PI / 2;
+        function setOriginPosition(players) {
+            for (let i = 0; i < players.length; i++) {
+                for (let x = 0; x < players[i].playerDeck.length; x++) {
+                    players[i].playerDeck[x].mesh.rotation.x = 0;
+                    if (players[i].player == 0 || players[i].player == 2) {
+                        players[i].playerDeck[x].mesh.rotation.y = -1.55;
+                    }
+                    else if (players[i].player == 1) {
+                        players[i].playerDeck[x].mesh.rotation.y = 0;
+
+                        players[i].playerDeck[x].mesh.rotation.x = 0;
+
+                    }
+
+                }
+
             }
+
+
         }
+
+        // function rotateCardsPlacement(players){
+
+        //     for (let i = 0; i < players.length; i++){
+
+
+        //     }
+
+
+        // }
 
         function rotateForCenter(player) {
             for (let i = 0; i < player.playerDeck.length; i++) {
-                player.playerDeck[i].mesh.rotation.y = Math.PI;
+                players[i].playerDeck[x].mesh.rotateY(1);
             }
         }
 
@@ -630,15 +667,10 @@
                     }
                     distributeWinnings(winner, players);
                     placeCards(players);
+
                     for (let i = 0; i < players.length; i++) {
                         if (players[i].playing == true) {
-                            if (players[i].player == 0 || players[i].player == 2) {
-                                console.log(" player id ", players[i].player);
-                                rotateCards(players[i]);
-                            }
-                            else if (players[i].player == 1) {
-                                rotateForCenter(players[i]);
-                            }
+                            setOriginPosition(players);
                             console.log(i, " player deck length ", players[i].playerDeck.length);
                         }
 
@@ -647,8 +679,8 @@
             }
             else {
                 let winner;
-                for(let i = 0; i < players.length; i++){
-                    if(players[i].player == true){
+                for (let i = 0; i < players.length; i++) {
+                    if (players[i].player == true) {
                         winner = players[i].player;
                     }
                 }
@@ -804,10 +836,10 @@
         function keyHandler(e) {
             switch (e.keyCode) {
                 case 87: //w
-                    bulbLight.translateY(.1);
+                    bulbLight.translateZ(-.1);
                     break;
                 case 83: //s
-                    bulbLight.translateY(-.1);
+                    bulbLight.translateZ(.1);
                     break;
                 case 68: //d
                     bulbLight.translateX(.1);
@@ -821,6 +853,7 @@
                 case 80: //P
                     //placeCards(players);
                     bulbLight.visible = !bulbLight.visible;
+                    bulbLight.position.set(0, .79, -2);
                     break;
                 case 78:
                     if (gameOver == false) {
