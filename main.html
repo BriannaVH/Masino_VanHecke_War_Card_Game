@@ -17,9 +17,9 @@
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
         let deck = [];
-        let leftMid = new THREE.Vector3(-1.15, .075, 0);
-        let rightMid = new THREE.Vector3(1.15, .075, 0);
-        let centerMid = new THREE.Vector3(-.25, .075, 1.3);
+        let leftMid = new THREE.Vector3(-1.15, 0, 0);
+        let rightMid = new THREE.Vector3(1.15, 0, 0);
+        let centerMid = new THREE.Vector3(0, 0, 0);
         let positions = [leftMid, centerMid, rightMid];
         var enableWar = 0;
         var gameOver = false;
@@ -183,7 +183,7 @@
             this.cardValue = value;
             this.cardSuit = suit;
 
-            this.geometry = new THREE.BoxGeometry(.2, .001, .4);
+            this.geometry = new THREE.BoxGeometry(.3, .01, .6);
             this.material = makeMaterial(this.cardValue, this.cardSuit);
 
             this.mesh = new THREE.Mesh(this.geometry, this.material);
@@ -366,7 +366,7 @@
             let playerY;
             let playerZ;
             for (let i = 0; i < players.length; i++) {
-                let height = .1;
+                let height = .075;
                 for (let x = 0; x < players[i].playerDeck.length; x++) {
                     height += .013;
                     playerX = players[i].playerPos.x;
@@ -385,15 +385,8 @@
             for (let i = 0; i < players.length; i++) {
                 for (let x = 0; x < players[i].playerDeck.length; x++) {
                     players[i].playerDeck[x].mesh.rotation.x = 0;
-                    if (players[i].player == 0 || players[i].player == 2) {
-                        players[i].playerDeck[x].mesh.rotation.y = -1.55;
-                    }
-                    else if (players[i].player == 1) {
-                        players[i].playerDeck[x].mesh.rotation.y = 0;
+                    players[i].playerDeck[x].mesh.rotation.y = 0;
 
-                        players[i].playerDeck[x].mesh.rotation.x = 0;
-
-                    }
 
                 }
 
@@ -530,12 +523,17 @@
         }
 
 
-        function tryMoveVertical(card, way) {
-            if (way = 1) {
-                card.mesh.translateY(.5);
-            }
-            else if (way = -1) {
-                card.mesh.translateY(-.5);
+        async function tryMoveVertical(card, way) {
+          
+            while (card.mesh.position.y >= .081) {
+                await delay(100);
+                if (way = 1) {
+                    card.mesh.translateY(.01);
+                }
+                else if (way = -1) {
+                    card.mesh.translateY(-.01);
+                }
+                
             }
         }
 
@@ -543,8 +541,14 @@
             card.mesh.rotateY(3.15);
         }
 
-        function tryMoveForward(card) {
-            card.mesh.translateZ(.5);
+        async function tryMoveForward(id, card) {
+           
+            while (card.mesh.position.z <= 1) {
+                await delay(100);
+                card.mesh.translateZ(.05);
+              
+            }
+            tryMoveVertical(card, -1);
         }
 
 
@@ -569,15 +573,15 @@
             while (i < 30) {
                 await delay(100);
                 if (id == 1) {
-                    card.mesh.rotateX(-.5);
+                    card.mesh.rotateZ(-.105);
                 }
                 else {
-                    card.mesh.rotateZ(-.05);
+                    card.mesh.rotateZ(-.105);
 
                 }
-
                 i++;
             }
+            tryMoveForward(id, card);
         }
 
         //in: players array
@@ -591,7 +595,9 @@
                     // tryMoveVertical(players[i].currentCards[0], -1);
                     // tryFlip(players[i].currentCards[0]);
                     //tryMoveForward(players[i].currentCards[0]);
-                    //tryLoop(players[i].player, players[i].currentCards[0]);
+                    tryLoop(players[i].player, players[i].currentCards[0]);
+                    //players[i].currentCards[0].mesh.translateY(.5);
+
                 }
             }
             //toggleMovement();
@@ -666,11 +672,12 @@
                         }
                     }
                     distributeWinnings(winner, players);
-                    placeCards(players);
+                    //placeCards(players);
+
 
                     for (let i = 0; i < players.length; i++) {
                         if (players[i].playing == true) {
-                            setOriginPosition(players);
+                            //  setOriginPosition(players);
                             console.log(i, " player deck length ", players[i].playerDeck.length);
                         }
 
@@ -689,38 +696,6 @@
                 console.log("one player remains");
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
