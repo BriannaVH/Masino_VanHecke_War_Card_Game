@@ -17,6 +17,7 @@
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
         let deck = [];
+        let tableMesh;
         let leftMid = new THREE.Vector3(-1.15, 0, 0);
         let rightMid = new THREE.Vector3(1.15, 0, 0);
         let centerMid = new THREE.Vector3(0, 0, 0);
@@ -56,21 +57,21 @@
         renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight); //Sets the size of the renderer to the entirety of the
         var focal = new THREE.Vector3(0.0, 0.0, 0.0);
+
+        renderer.shadowMap.enabled = true;//shadow
+        let shadowEnabled = true;
+
         camera.lookAt(focal);
         scene.add(camera);
 
 
         // #FFC0CB
         //0x0000ff
-        const light = new THREE.AmbientLight(0xFF66CC, 1); // soft white light
-        scene.add(light);
-
-        console.log("camera position", camera.position);
+        const ambientLight = new THREE.AmbientLight(0xFF66CC, 1); // soft white light
+        scene.add(ambientLight);
 
         const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
-        // bulbGeometry.position.set(3,0,0);
         let bulbLight = new THREE.PointLight(0xffee88, 1.5, 100, 2);
-
         let bulbMat = new THREE.MeshStandardMaterial({
             emissive: 0xffffee,
             emissiveIntensity: 1,
@@ -78,13 +79,15 @@
         });
         bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
         bulbLight.position.set(0, .79, -2);
-        bulbLight.castShadow = true;
+
+        bulbLight.castShadow = true;//shadow
+
         scene.add(bulbLight);
 
-        shadowCamera.position.x = bulbLight.position.x;
-        shadowCamera.position.y = bulbLight.position.y;
-        shadowCamera.position.z = bulbLight.position.z;
-        console.log(shadowCamera.position);
+        // shadowCamera.position.x = bulbLight.position.x;
+        // shadowCamera.position.y = bulbLight.position.y;
+        // shadowCamera.position.z = bulbLight.position.z;
+        // console.log(shadowCamera.position);
 
 
         const loader = new THREE.TextureLoader();
@@ -125,9 +128,12 @@
 
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.rotation.x = 0;
+            this.mesh.castShadow = true;
+            this.mesh.receiveShadow = true;
             this.mesh.translateY(5);
 
-            console.log(this.mesh.rotation.y, 'ROTATION Y ORIGIN');
+            console.log(this.mesh, 'mesh check shadow');
+
 
             scene.add(this.mesh);
         }
@@ -234,10 +240,14 @@
                 map: loader.load(woodTexture),
 
             });
-            let mesh = new THREE.Mesh(geometry, material);
+            tableMesh = new THREE.Mesh(geometry, material);
+            tableMesh.receiveShadow = true;//shadow
+            tableMesh.castShadow = true;
 
-            console.log(mesh, 'mesh');
-            scene.add(mesh);
+            console.log('tABLE', tableMesh);
+
+            console.log(tableMesh, 'mesh');
+            scene.add(tableMesh);
         }
 
         function initHorizon() {
@@ -386,7 +396,7 @@
 
         }
 
-         //in player
+        //in player
         //out nothing
         function moveOneCard(players) {
             for (let i = 0; i < players.length; i++) {
@@ -568,12 +578,35 @@
                     bulbLight.translateX(-.1);
                     break;
                 case 76: //L
-                    light.visible = !light.visible;
+                    ambientLight.visible = !ambientLight.visible;
                     break;
                 case 80: //P
                     //placeCards(players);
                     bulbLight.visible = !bulbLight.visible;
                     bulbLight.position.set(0, .79, -2);
+                    break;
+                case 77: //P
+                    renderer.shadowMap.enabled = !renderer.shadowMap.enabled;
+                    let enabled = renderer.shadowMap.enabled;
+
+                    if (enabled == false) {
+                        console.log("TURN OFF");
+                        for (let i = 0; i < deck; i++) {
+                            deck.mesh.castShadow = false;
+                            deck.mesh.receiveShadow = false;
+                        }
+                        tableMesh.castShadow = false;
+                        tableMesh.receiveShadow = false;
+                    }
+                    else {
+                        console.log("TURN ON");
+                        for (let i = 0; i < deck; i++) {
+                            deck.mesh.castShadow = true;
+                            deck.mesh.receiveShadow = true;
+                        }
+                        tableMesh.castShadow = true;
+                        tableMesh.receiveShadow = true;
+                    }
                     break;
                 case 78:
                     if (gameOver == false) {
