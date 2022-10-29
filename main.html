@@ -418,64 +418,146 @@
             }
         }
 
+        function regularMove(players, warTime) {
+            console.log("START REG MOVE");
+            let cardsInPlay = getCardsInPlay(players);
+            console.log("CHICKEN BUTT ", cardsInPlay);
+            moveUp(cardsInPlay, warTime);
+            // for (let i = 0; i < players.length; i++) {
+            //     console.log("card passed into moveup ", players[i].currentCards[0]);
+            //     moveUp(players[i].currentCards[0]);
+            // }
+
+            //moveOneCard(players);
+
+            //  flip(card);
+            // moveForward(card);
+            // moveDown(card, -1);
+            //    let cardsInPlay = getCardsInPlay(players);
+            //     findWinOrWar(cardsInPlay);
+        }
+
+
+        // function tempWarMove(players) {
+        //     console.log("in temp war?");
+        //     if (checkPlayers(players) == true) {
+        //         moveOneCard(players);
+        //         regularMove(players);
+        //         moveOneCard(players);
+        //         regularMove(players);
+        //         // for (let i = 0; i < players.length; i++){
+        //         //     regularMove(players[i].currentCards[0]);
+        //         // }
+        //     }
+        //     // for (let i = 0; i < players.length; i++) {
+        //     //    // moveUpWar(players[i].currentCards[0]);
+        //     // }
+
+        //     //moveOneCard(players);
+
+        //     //  flip(card);
+        //     // moveForward(card);
+        //     // moveDown(card, -1);
+        //     //    let cardsInPlay = getCardsInPlay(players);
+        //     //     findWinOrWar(cardsInPlay);
+        // }
+
+
+
+        // function warMove(players) {
+        //     console.log("START WAR MOVE");
+        //     //moveUp(card);
+        //     //moveForward(card);
+        //     // moveDown(card, -1);
+        //     //  moveOneCard(players);
+        //     regularMove(players);
+
+        // }
+
+
+
         function delay(milliseconds) {
             return new Promise(resolve => {
                 setTimeout(resolve, milliseconds);
             });
         }
 
-        async function moveUp(id, card) {
-            let i = 0;
-            while (i < 20) {
-                await delay(100);
-                card.mesh.translateY(.01);
-                i++;
+        async function moveUp(cards, warTime) {
+            for (let c = 0; c < cards.length; c++) {
+                console.log("START MOVE UP");
+                let card = cards[c];
+                let i = 0;
+                while (i < 5) { //20
+                    await delay(50);
+                    card.mesh.translateY(.04); //.01
+                    i++;
+                }
             }
-            flip(id, card);
+            flip(cards, warTime);
         }
 
-        async function flip(id, card) {
-            let i = 0;
-            while (i < 30) {
-                await delay(100);
-                if (id == 1) {
-                    card.mesh.rotateZ(-.105);
+        async function flip(cards, warTime) {
+            if (warTime == false) {
+                for (let c = 0; c < cards.length; c++) {
+                    console.log("START FLIP");
+                    let card = cards[c];
+                    let i = 0;
+                    while (i < 8) { //30
+                        await delay(50);
+                        card.mesh.rotateZ(-.40); //-.105
+                        i++;
+                    }
                 }
-                else {
-                    card.mesh.rotateZ(-.105);
-
-                }
-                i++;
             }
-            moveForward(id, card);
+
+            moveForward(cards, warTime);
         }
 
-        async function moveForward(id, card) {
-
-            while (card.mesh.position.z <= 1) {
-                await delay(100);
-                card.mesh.translateZ(.05);
-
+        async function moveForward(cards, warTime) {
+            console.log("OH NO MY BOOLEAN ", warTime);
+            for (let c = 0; c < cards.length; c++) {
+                console.log("START MOVE FORWARD");
+                let card = cards[c];
+                while (card.mesh.position.z <= 1) {
+                    await delay(50);
+                    card.mesh.translateZ(.4); //.05
+                }
             }
-            moveDown(card, -1);
+                moveDown(cards, warTime);
         }
 
-        async function moveDown(card, way) {
-            while (card.mesh.position.y >= .081) {
-                await delay(100);
-                if (way = 1) {
-                    card.mesh.translateY(.01);
-                }
-                else if (way = -1) {
-                    card.mesh.translateY(-.01);
+        async function moveDown(cards, warTime) {
+            for (let c = 0; c < cards.length; c++) {
+                console.log("START MOVE DOWN");
+                let card = cards[c];
+                while (card.mesh.position.y >= .081) {
+                    await delay(50);
+                    if (warTime == false) {
+                        console.log("card moving .04 with ", warTime);
+                        card.mesh.translateY(.04);
+                    }
+                    else if (warTime == true) {
+                        console.log("card moving -.04");
+                        card.mesh.translateY(-.04);
+                    }
                 }
             }
+            console.log("animation done");
+            findWinOrWar(cards);
+            console.log("movedown");
+            if (warTime == true) {
+                moveOneCard(players);
+                regularMove(players, false);
+            }
+            // let cardsInPlay = getCardsInPlay(players);
+            // findWinOrWar(cardsInPlay);
         }
 
 
         //in: array of players [0.1.2]
         //out: num players left
         function checkPlayers(players) {
+            console.log("CHECK PLAYERS FUNC");
             let count = 0;
 
             for (let i = 0; i < players.length; i++) {
@@ -505,6 +587,7 @@
         //in player
         //out nothing
         function moveOneCard(players) {
+            console.log("MOVE ONE CARD FUNC");
             for (let i = 0; i < players.length; i++) {
                 if (players[i].playing == true) {
                     if (players[i].playerDeck.length == 0) {
@@ -514,7 +597,6 @@
                         let topCard = players[i].playerDeck.pop();
                         players[i].currentCards.unshift(topCard);
                     }
-
                 }
             }
         }
@@ -522,6 +604,7 @@
         //in: players array
         //out: an array of playing cards [1.2.3]
         function getCardsInPlay(players) {
+            console.log("START GET CARDS");
             let cardsInPlay = [];
             for (let i = 0; i < players.length; i++) {
                 if (players[i].playing == true) {
@@ -530,7 +613,7 @@
                     // tryMoveVertical(players[i].currentCards[0], -1);
                     // tryFlip(players[i].currentCards[0]);
                     //tryMoveForward(players[i].currentCards[0]);
-                    moveUp(players[i].player, players[i].currentCards[0]);
+                    // moveUp(players[i].player, players[i].currentCards[0]);
                     //players[i].currentCards[0].mesh.translateY(.5);
 
                 }
@@ -544,12 +627,13 @@
         //in: array [1,2,3] 
         //out: max
         function findWinOrWar(cardsInPlay) {
+            console.log("FIND RESULT");
             let wars = -10;
             let max = 0;
             for (let y = 0; y < cardsInPlay.length; y++) {
-                console.log("war: ", wars);
-                console.log("max: ", max);
-                console.log("card ", cardsInPlay[y].cardValue);
+                //  console.log("war: ", wars);
+                //console.log("max: ", max);
+                //console.log("card ", cardsInPlay[y].cardValue);
                 //console.log("check ", cardsInPlay[y]);
                 if (cardsInPlay[y].cardValue == max) {
                     console.log("equal");
@@ -562,23 +646,47 @@
                 }
                 // console.log("missed both");
             }
-            // console.log("m check ", max);
-            // console.log("w check ", war);
+
             if (max == wars) {
-                console.log("CALL COMPARE AGAIN");
-                max = -1;
-                //console.log("war with ", war);
+                console.log("INTOWAR");
+                if (checkPlayers(players) == true) {
+                    moveOneCard(players);
+                    //tempWarMove(players);
+                    regularMove(players, true);
+
+                }
             }
-            console.log("max is ", max);
-            return max;
+            else if (max != wars) {
+                console.log("FIND WINNER ");
+                console.log("MAX IS ????? ", max);
+                let winner;
+                for (let i = 0; i < players.length; i++) {
+                    if (players[i].playing == true) {
+                        let card = players[i].currentCards[0];
+                        console.log("CARD???  ", card);
+                        if (card.cardValue == max) {
+                            winner = players[i];
+                        }
+                    }
+                }
+                distributeWinnings(winner, players);
+                //Console.log("GIVE SPOILS");
+                //distributeWinnings(winner, players);
+                //placeCards(players);
+                //setOriginPosition(players)
+            }
+
+
+            // console.log("max is ", max);
+            //return max;
         }
 
 
         //in: players
         //out: none
         function distributeWinnings(winner, players) {
+            console.log("START DISTR WINNING");
             let spoils = [];
-            console.log("p len ", players.length);
             for (let i = 0; i < players.length; i++) {
                 spoils = spoils.concat(players[i].currentCards);
                 players[i].currentCards = [];
@@ -590,6 +698,20 @@
                 winner.playerDeck.unshift(spoils[i]);
             }
         }
+
+
+        function hotPotato(players) {
+            console.log("HOT POTATO");
+            if (checkPlayers(players) == true) {
+                moveOneCard(players);
+                regularMove(players, false);
+                // for (let i = 0; i < players.length; i++){
+                //     regularMove(players[i].currentCards[0]);
+                // }
+            }
+        }
+
+
 
 
         function makeMove(players, isThisWar) {
@@ -722,10 +844,12 @@
                     }
                     break;
                 case 78:
-                    if (gameOver == false) {
-
-                        //  toggleMovement();
-                        makeMove(players, false);
+                if (gameOver == false) {
+                        placeCards(players);
+                        setOriginPosition(players)
+                        // toggleMovement();
+                        // makeMove(players, false);
+                        hotPotato(players);
                     }
             }
         }
