@@ -30,6 +30,7 @@
         let players = [];
         let checkPlayerDecks = [];
         let cardPlacement = .08;
+        let sky0 = false;
 
         const width1 = 10;
         const height1 = 10;
@@ -81,13 +82,13 @@
             'card_Textures/6_of_hearts.png', 'card_Textures/7_of_hearts.png', 'card_Textures/8_of_hearts.png', 'card_Textures/9_of_hearts.png',
             'card_Textures/10_of_hearts.png', 'card_Textures/jack_of_hearts2.png', 'card_Textures/queen_of_hearts2.png', 'card_Textures/king_of_hearts2.png',
             'card_Textures/ace_of_hearts.png'];
-        
-            let diamonds = ['card_Textures/2_of_diamonds.png', 'card_Textures/3_of_diamonds.png', 'card_Textures/4_of_diamonds.png',
+
+        let diamonds = ['card_Textures/2_of_diamonds.png', 'card_Textures/3_of_diamonds.png', 'card_Textures/4_of_diamonds.png',
             'card_Textures/5_of_diamonds.png', 'card_Textures/6_of_diamonds.png', 'card_Textures/7_of_diamonds.png', 'card_Textures/8_of_diamonds.png', 'card_Textures/9_of_diamonds.png',
             'card_Textures/10_of_diamonds.png', 'card_Textures/jack_of_diamonds2.png', 'card_Textures/queen_of_diamonds2.png', 'card_Textures/king_of_diamonds2.png',
             'card_Textures/ace_of_diamonds.png'];
-       
-            let spades = ['card_Textures/2_of_spades.png', 'card_Textures/3_of_spades.png', 'card_Textures/4_of_spades.png',
+
+        let spades = ['card_Textures/2_of_spades.png', 'card_Textures/3_of_spades.png', 'card_Textures/4_of_spades.png',
             'card_Textures/5_of_spades.png', 'card_Textures/6_of_spades.png', 'card_Textures/7_of_spades.png', 'card_Textures/8_of_spades.png',
             'card_Textures/9_of_spades.png', 'card_Textures/10_of_spades.png', 'card_Textures/jack_of_spades2.png', 'card_Textures/queen_of_spades2.png', 'card_Textures/king_of_spades2.png',
             'card_Textures/ace_of_spades.png'];
@@ -124,7 +125,7 @@
             color: 0x000000
         });
         bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
-        bulbLight.position.set(0, 2.5, -2);
+        bulbLight.position.set(0, 2.0, -2);
 
         bulbLight.castShadow = true;//shadow
 
@@ -138,6 +139,13 @@
 
         const loader = new THREE.TextureLoader();
         const geometry = new THREE.BoxGeometry(.2, .01, .4);
+
+
+        //here
+        let skies = [
+            new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky0.png'), side: THREE.DoubleSide }),
+            new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSide })
+        ];
 
         //let i = 0;
 
@@ -190,7 +198,7 @@
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ map: loader.load(backOfCard) }), //this is the front
-                new THREE.MeshPhysicalMaterial({ map: loader.load(backOfCard) }), //this is the back of the card
+                new THREE.MeshPhysicalMaterial({ color: 0xffffff }), //this is the back of the card
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
             ];
@@ -321,20 +329,21 @@
 
         let floorMesh;
 
+
+
         function initGround() {
             let string1 = 'floor/floor7.jpg';
             let geometry = new THREE.BoxGeometry(.01, 20, 20);
-            let material = new THREE.MeshPhysicalMaterial({
-                // Use the map attribute to hold the texture
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1)
 
-            });
-            floorMesh = new THREE.Mesh(geometry, material);
+            let grounds = [
+                new THREE.MeshPhysicalMaterial({ map: loader.load(string1) }),
+                new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
+                new THREE.MeshPhysicalMaterial({ color: 0xffffff }), //this is the front
+                new THREE.MeshPhysicalMaterial({ color: 0xffffff }), //this is the back of the card
+                new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
+                new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
+            ];
+            floorMesh = new THREE.Mesh(geometry, grounds);
             floorMesh.receiveShadow = true;//shadow
             floorMesh.castShadow = true;
 
@@ -355,16 +364,18 @@
 
         function initHorizon() {
             let planeGeometry = new THREE.PlaneGeometry(2.5, 1.5);
-            let planeMaterial = new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSide });
+            let planeMaterial = skies[1];
             let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
             //planeMesh.rotateX(1);
             scene.add(planeMesh);
             planeMesh.position.set(0, .80, -1.7);
+            return planeMesh;
         }
 
         function initWall() {
             let wallPaperGeometry = new THREE.BoxGeometry(20, 5, 1);
-            let wallPaperMaterial = new THREE.MeshBasicMaterial({ map: loader.load('wallpaper/wallpaper7.jpg'), side: THREE.DoubleSide });
+            //let wallPaperMaterial = new THREE.MeshBasicMaterial({ map: loader.load('wallpaper/wallpaper6.jpg'), side: THREE.DoubleSide });
+            let wallPaperMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
             let wallPaperMesh = new THREE.Mesh(wallPaperGeometry, wallPaperMaterial);
             //planeMesh.rotateX(1);
             //wallPaperMesh.rotateY(Math.PI/2);
@@ -505,7 +516,7 @@
                 }
                 card.mesh.position.y = .75;
             }
-          
+
             flip(cards, warTime);
         }
 
@@ -515,18 +526,18 @@
                     console.log("START FLIP");
                     let card = cards[c];
                     let i = 0;
-                    while (i <15) { //30
+                    while (i < 15) { //30
                         await delay(1);
-                        
-                       // console.log(card.mesh.rotation.z, 'card rotation before');
+
+                        // console.log(card.mesh.rotation.z, 'card rotation before');
                         card.mesh.rotateZ(-.21); //-.105
-                        
+
                         //console.log(card.mesh.rotation.z, 'card rotation after');
                         i++;
                     }
                     card.mesh.rotation.z = -3.15;
                 }
-              
+
             }
 
             moveForward(cards, warTime);
@@ -542,7 +553,7 @@
                     card.mesh.translateZ(.1); //.05
                 }
             }
-                moveDown(cards, warTime);
+            moveDown(cards, warTime);
         }
 
         async function moveDown(cards, warTime) {
@@ -560,25 +571,25 @@
                         card.mesh.translateY(-.02);
                     }
                 }
-                card.mesh.position.y = cardPlacement;     
+                card.mesh.position.y = cardPlacement;
             }
             cardPlacement += .015;
             console.log("animation done");
             findWinOrWar(cards);
             console.log("movedown");
-           
+
             if (warTime == true) {
-                
+
                 moveOneCard(players);
                 regularMove(players, false);
-             
+
                 // movePermitted=false;
             }
-             
-              
+
+
             // let cardsInPlay = getCardsInPlay(players);
             // findWinOrWar(cardsInPlay);
-            
+
         }
 
 
@@ -725,8 +736,8 @@
             for (let i = 0; i < spoils.length; i++) {
                 winner.playerDeck.unshift(spoils[i]);
             }
-            movePermitted=true;
-            
+            movePermitted = true;
+
         }
 
 
@@ -873,23 +884,32 @@
                         tableMesh.receiveShadow = true;
                     }
                     break;
-                case 78:
-
-                if (gameOver == false) {
-                    if (movePermitted==true){
-                        cardPlacement = .08;
-                        movePermitted=false;
-                        placeCards(players);
-                        setOriginPosition(players)
-                        // toggleMovement();
-                        // makeMove(players, false);
-                        hotPotato(players);
+                case 69:
+                    if (sky0 == false) {
+                        planeMesh.material = skies[0];
+                        sky0 = true;
                     }
-                    // else {
-                    //  //   console.log("u dumbass");
-                    // }
-                      
-                        
+                    else{
+                        planeMesh.material = skies[1];
+                        sky0 = false;
+                    }
+                    break;
+                case 78:
+                    if (gameOver == false) {
+                        if (movePermitted == true) {
+                            cardPlacement = .08;
+                            movePermitted = false;
+                            placeCards(players);
+                            setOriginPosition(players)
+                            // toggleMovement();
+                            // makeMove(players, false);
+                            hotPotato(players);
+                        }
+                        // else {
+                        //  //   console.log("u dumbass");
+                        // }
+
+
                     }
             }
         }
@@ -900,7 +920,7 @@
 
         initTable();
         initCards();
-        initHorizon();
+        let planeMesh = initHorizon();
         initGround();
         initWall();
         initWindow();
