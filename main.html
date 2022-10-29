@@ -487,12 +487,14 @@
                 console.log("START MOVE UP");
                 let card = cards[c];
                 let i = 0;
-                while (i < 5) { //20
+                while (card.mesh.position.y <= .75) {
                     await delay(50);
-                    card.mesh.translateY(.04); //.01
+                    card.mesh.translateY(.05); //.01
                     i++;
                 }
+                card.mesh.position.y = .75;
             }
+          
             flip(cards, warTime);
         }
 
@@ -502,12 +504,18 @@
                     console.log("START FLIP");
                     let card = cards[c];
                     let i = 0;
-                    while (i < 8) { //30
+                    while (i <15) { //30
                         await delay(50);
-                        card.mesh.rotateZ(-.40); //-.105
+                        
+                        console.log(card.mesh.rotation.z, 'card rotation before');
+                        card.mesh.rotateZ(-.21); //-.105
+                        
+                        console.log(card.mesh.rotation.z, 'card rotation after');
                         i++;
                     }
+                    card.mesh.rotation.z = -3.15;
                 }
+              
             }
 
             moveForward(cards, warTime);
@@ -518,9 +526,9 @@
             for (let c = 0; c < cards.length; c++) {
                 console.log("START MOVE FORWARD");
                 let card = cards[c];
-                while (card.mesh.position.z <= 1) {
+                while (card.mesh.position.z <= .8) {
                     await delay(50);
-                    card.mesh.translateZ(.4); //.05
+                    card.mesh.translateZ(.1); //.05
                 }
             }
                 moveDown(cards, warTime);
@@ -530,17 +538,18 @@
             for (let c = 0; c < cards.length; c++) {
                 console.log("START MOVE DOWN");
                 let card = cards[c];
-                while (card.mesh.position.y >= .081) {
-                    await delay(50);
+                while (card.mesh.position.y >= .08) {
+                    await delay(25);
                     if (warTime == false) {
-                        console.log("card moving .04 with ", warTime);
-                        card.mesh.translateY(.04);
+                        console.log("card moving .04 with but not wartime", warTime);
+                        card.mesh.translateY(.02);
                     }
                     else if (warTime == true) {
-                        console.log("card moving -.04");
-                        card.mesh.translateY(-.04);
+                        console.log("card moving -.04 in wartime");
+                        card.mesh.translateY(-.02);
                     }
                 }
+                card.mesh.position.y = .08;
             }
             console.log("animation done");
             findWinOrWar(cards);
