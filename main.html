@@ -302,30 +302,30 @@
             scene.add(tableMesh);
         }
 
-        function initWindow() {
-            let string1 = 'windows/window6.jpg';
-            let windowgeometry = new THREE.BoxGeometry(2.2, 1.3, .02);
+        // function initWindow() {
+        //     let string1 = 'windows/window6.jpg';
+        //     let windowgeometry = new THREE.BoxGeometry(2.2, 1.3, .02);
 
-            let windowMaterial = new THREE.MeshBasicMaterial({
-                // Use the map attribute to hold the texture
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
-                map: loader.load(string1),
+        //     let windowMaterial = new THREE.MeshBasicMaterial({
+        //         // Use the map attribute to hold the texture
+        //         map: loader.load(string1),
+        //         map: loader.load(string1),
+        //         map: loader.load(string1),
+        //         map: loader.load(string1),
+        //         map: loader.load(string1),
+        //         map: loader.load(string1),
 
-            });
-            let windowMesh = new THREE.Mesh(windowgeometry, windowMaterial);
+        //     });
+        //     let windowMesh = new THREE.Mesh(windowgeometry, windowMaterial);
 
-            windowMesh.position.set(0, 0, -3.7);
-            // windowMesh.receiveShadow = true;//shadow
-            // windowMesh.castShadow = true;
+        //     windowMesh.position.set(0, 0, -3.7);
+        //     // windowMesh.receiveShadow = true;//shadow
+        //     // windowMesh.castShadow = true;
 
-            console.log('window', windowMesh);
+        //     console.log('window', windowMesh);
 
-            scene.add(windowMesh);
-        }
+        //     scene.add(windowMesh);
+        // }
 
         let floorMesh;
 
@@ -923,7 +923,7 @@
         let planeMesh = initHorizon();
         initGround();
         initWall();
-        initWindow();
+       // initWindow();
         initPlayers(3);
         dealCards(deck, players);
         console.log(players);
