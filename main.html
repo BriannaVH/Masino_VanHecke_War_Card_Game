@@ -33,6 +33,8 @@
         const width1 = 10;
         const height1 = 10;
         const intensity = 1;
+        let movePermitted = true;
+
         const rectLight = new THREE.RectAreaLight(0xffffff, intensity, width1, height1);
         rectLight.position.set(0, 0, -1.6);
         rectLight.lookAt(0, 0, 0);
@@ -69,19 +71,25 @@
         let woodTexture = 'misc_textures/table.jpg';
         let backOfCard = 'misc_textures/card_back.png';
 
-        let clubs = ['card_Textures/ace_of_clubs.png', 'card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
+        let clubs = ['card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
             'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
             'card_Textures/10_of_clubs.png', 'card_Textures/jack_of_clubs2.png', 'card_Textures/queen_of_clubs2.png',
-            'card_Textures/king_of_clubs2.png'];
-        let hearts = ['card_Textures/ace_of_hearts.png', 'card_Textures/2_of_hearts.png', 'card_Textures/3_of_hearts.png', 'card_Textures/4_of_hearts.png', 'card_Textures/5_of_hearts.png',
+            'card_Textures/king_of_clubs2.png', 'card_Textures/ace_of_clubs.png'];
+
+        let hearts = ['card_Textures/2_of_hearts.png', 'card_Textures/3_of_hearts.png', 'card_Textures/4_of_hearts.png', 'card_Textures/5_of_hearts.png',
             'card_Textures/6_of_hearts.png', 'card_Textures/7_of_hearts.png', 'card_Textures/8_of_hearts.png', 'card_Textures/9_of_hearts.png',
-            'card_Textures/10_of_hearts.png', 'card_Textures/jack_of_hearts2.png', 'card_Textures/queen_of_hearts2.png', 'card_Textures/king_of_hearts2.png'];
-        let diamonds = ['card_Textures/ace_of_diamonds.png', 'card_Textures/2_of_diamonds.png', 'card_Textures/3_of_diamonds.png', 'card_Textures/4_of_diamonds.png',
+            'card_Textures/10_of_hearts.png', 'card_Textures/jack_of_hearts2.png', 'card_Textures/queen_of_hearts2.png', 'card_Textures/king_of_hearts2.png',
+            'card_Textures/ace_of_hearts.png'];
+        
+            let diamonds = ['card_Textures/2_of_diamonds.png', 'card_Textures/3_of_diamonds.png', 'card_Textures/4_of_diamonds.png',
             'card_Textures/5_of_diamonds.png', 'card_Textures/6_of_diamonds.png', 'card_Textures/7_of_diamonds.png', 'card_Textures/8_of_diamonds.png', 'card_Textures/9_of_diamonds.png',
-            'card_Textures/10_of_diamonds.png', 'card_Textures/jack_of_diamonds2.png', 'card_Textures/queen_of_diamonds2.png', 'card_Textures/king_of_diamonds2.png'];
-        let spades = ['card_Textures/ace_of_spades.png', 'card_Textures/2_of_spades.png', 'card_Textures/3_of_spades.png', 'card_Textures/4_of_spades.png',
+            'card_Textures/10_of_diamonds.png', 'card_Textures/jack_of_diamonds2.png', 'card_Textures/queen_of_diamonds2.png', 'card_Textures/king_of_diamonds2.png',
+            'card_Textures/ace_of_diamonds.png'];
+       
+            let spades = ['card_Textures/2_of_spades.png', 'card_Textures/3_of_spades.png', 'card_Textures/4_of_spades.png',
             'card_Textures/5_of_spades.png', 'card_Textures/6_of_spades.png', 'card_Textures/7_of_spades.png', 'card_Textures/8_of_spades.png',
-            'card_Textures/9_of_spades.png', 'card_Textures/10_of_spades.png', 'card_Textures/jack_of_spades2.png', 'card_Textures/queen_of_spades2.png', 'card_Textures/king_of_spades2.png'];
+            'card_Textures/9_of_spades.png', 'card_Textures/10_of_spades.png', 'card_Textures/jack_of_spades2.png', 'card_Textures/queen_of_spades2.png', 'card_Textures/king_of_spades2.png',
+            'card_Textures/ace_of_spades.png'];
 
         var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
         camera.position.x = 0;  // Try moving this around!
@@ -414,6 +422,7 @@
                 for (let x = 0; x < players[i].playerDeck.length; x++) {
                     players[i].playerDeck[x].mesh.rotation.x = 0;
                     players[i].playerDeck[x].mesh.rotation.y = 0;
+                    players[i].playerDeck[x].mesh.rotation.z = 0;
                 }
             }
         }
@@ -423,6 +432,7 @@
             let cardsInPlay = getCardsInPlay(players);
             console.log("CHICKEN BUTT ", cardsInPlay);
             moveUp(cardsInPlay, warTime);
+
             // for (let i = 0; i < players.length; i++) {
             //     console.log("card passed into moveup ", players[i].currentCards[0]);
             //     moveUp(players[i].currentCards[0]);
@@ -488,7 +498,7 @@
                 let card = cards[c];
                 let i = 0;
                 while (card.mesh.position.y <= .75) {
-                    await delay(50);
+                    await delay(1);
                     card.mesh.translateY(.05); //.01
                     i++;
                 }
@@ -505,12 +515,12 @@
                     let card = cards[c];
                     let i = 0;
                     while (i <15) { //30
-                        await delay(50);
+                        await delay(1);
                         
-                        console.log(card.mesh.rotation.z, 'card rotation before');
+                       // console.log(card.mesh.rotation.z, 'card rotation before');
                         card.mesh.rotateZ(-.21); //-.105
                         
-                        console.log(card.mesh.rotation.z, 'card rotation after');
+                        //console.log(card.mesh.rotation.z, 'card rotation after');
                         i++;
                     }
                     card.mesh.rotation.z = -3.15;
@@ -527,7 +537,7 @@
                 console.log("START MOVE FORWARD");
                 let card = cards[c];
                 while (card.mesh.position.z <= .8) {
-                    await delay(50);
+                    await delay(1);
                     card.mesh.translateZ(.1); //.05
                 }
             }
@@ -539,7 +549,7 @@
                 console.log("START MOVE DOWN");
                 let card = cards[c];
                 while (card.mesh.position.y >= .08) {
-                    await delay(25);
+                    await delay(1);
                     if (warTime == false) {
                         console.log("card moving .04 with but not wartime", warTime);
                         card.mesh.translateY(.02);
@@ -554,12 +564,19 @@
             console.log("animation done");
             findWinOrWar(cards);
             console.log("movedown");
+           
             if (warTime == true) {
+                
                 moveOneCard(players);
                 regularMove(players, false);
+             
+                // movePermitted=false;
             }
+             
+              
             // let cardsInPlay = getCardsInPlay(players);
             // findWinOrWar(cardsInPlay);
+            
         }
 
 
@@ -706,6 +723,7 @@
             for (let i = 0; i < spoils.length; i++) {
                 winner.playerDeck.unshift(spoils[i]);
             }
+            movePermitted=true;
         }
 
 
@@ -853,12 +871,21 @@
                     }
                     break;
                 case 78:
+
                 if (gameOver == false) {
+                    if (movePermitted==true){
+                        movePermitted=false;
                         placeCards(players);
                         setOriginPosition(players)
                         // toggleMovement();
                         // makeMove(players, false);
                         hotPotato(players);
+                    }
+                    // else {
+                    //  //   console.log("u dumbass");
+                    // }
+                      
+                        
                     }
             }
         }
