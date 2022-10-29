@@ -29,6 +29,7 @@
         let shadowCamera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
         let players = [];
         let checkPlayerDecks = [];
+        let cardPlacement = .08;
 
         const width1 = 10;
         const height1 = 10;
@@ -548,7 +549,7 @@
             for (let c = 0; c < cards.length; c++) {
                 console.log("START MOVE DOWN");
                 let card = cards[c];
-                while (card.mesh.position.y >= .08) {
+                while (card.mesh.position.y >= cardPlacement) {
                     await delay(1);
                     if (warTime == false) {
                         console.log("card moving .04 with but not wartime", warTime);
@@ -559,8 +560,9 @@
                         card.mesh.translateY(-.02);
                     }
                 }
-                card.mesh.position.y = .08;
+                card.mesh.position.y = cardPlacement;     
             }
+            cardPlacement += .015;
             console.log("animation done");
             findWinOrWar(cards);
             console.log("movedown");
@@ -724,6 +726,7 @@
                 winner.playerDeck.unshift(spoils[i]);
             }
             movePermitted=true;
+            
         }
 
 
@@ -874,6 +877,7 @@
 
                 if (gameOver == false) {
                     if (movePermitted==true){
+                        cardPlacement = .08;
                         movePermitted=false;
                         placeCards(players);
                         setOriginPosition(players)
