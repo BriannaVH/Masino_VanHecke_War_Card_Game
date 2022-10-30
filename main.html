@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Three.js BuffedGeometry Example</title>
+    <title>WAR Card Game</title>
 </head>
 
 <body>
@@ -17,27 +17,24 @@
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
         let deck = [];
+        let players = [];
         let tableMesh;
+        let floorMesh;
         let leftMid = new THREE.Vector3(-1.15, 0, 0);
         let rightMid = new THREE.Vector3(1.15, 0, 0);
         let centerMid = new THREE.Vector3(0, 0, 0);
         let positions = [leftMid, centerMid, rightMid];
-        var enableWar = 0;
-        var gameOver = false;
-        let players = [];
         let cardPlacement = .08;
-        let sky0 = false;
-        let floorMesh;
-        const loader = new THREE.TextureLoader();
-
         const width1 = 5;
         const height1 = 5;
         const intensity = 1;
         let movePermitted = true;
+        var gameOver = false;
+        let sky0 = false;
+        const loader = new THREE.TextureLoader();
 
         let woodTexture = 'misc_textures/table.jpg';
         let backOfCard = 'misc_textures/card_back.png';
-
 
         let skies = [
             new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky0.png'), side: THREE.DoubleSide }),
@@ -78,13 +75,13 @@
         var focal = new THREE.Vector3(0.0, 0.0, 0.0);
 
         renderer.shadowMap.enabled = true;
-        let shadowEnabled = true;
         camera.lookAt(focal);
         scene.add(camera);
 
         const ambientLight = new THREE.AmbientLight(0xFFB6C1, .5);
         scene.add(ambientLight);
 
+        //Src : https://threejs.org/examples/?q=light#webgl_lights_physical
         const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
         let bulbLight = new THREE.PointLight(0xffee88, 1.5, 100, 2);
         let bulbMat = new THREE.MeshStandardMaterial({
@@ -103,6 +100,8 @@
         scene.add(rectLight);
 
         //left player 0, middle player 1. right player 2, we are player 1 in the middle
+        // Src: 
+        //https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj#:~:text=The%20first%20and%20simplest%20way,)%20%3D%3E%200.5%20%2D%20Math. 
         const shuffleArray = deck => {
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -313,6 +312,7 @@
             }
         }
 
+        //Src: https://alvarotrigo.com/blog/wait-1-second-javascript/
         function delay(milliseconds) {
             return new Promise(resolve => {
                 setTimeout(resolve, milliseconds);
@@ -326,6 +326,7 @@
             moveUp(cardsInPlay, warTime);
         }
 
+        //Src: https://alvarotrigo.com/blog/wait-1-second-javascript/
         async function moveUp(cards, warTime) {
             for (let c = 0; c < cards.length; c++) {
                 console.log("START MOVE UP");
@@ -408,11 +409,9 @@
                 }
                 if (cardsInPlay[y].cardValue > max) {
                     console.log("greater");
-
                     max = cardsInPlay[y].cardValue;
                 }
             }
-
             if (max == wars) {
                 console.log("INTOWAR");
                 if (checkPlayers(players) == true) {
@@ -548,6 +547,8 @@
                         }
                         tableMesh.castShadow = false;
                         tableMesh.receiveShadow = false;
+                        floorMesh.castShadow = false;
+                        floorMesh.receiveShadow = false;
                     }
                     else {
                         console.log("TURN ON");
@@ -557,6 +558,8 @@
                         }
                         tableMesh.castShadow = true;
                         tableMesh.receiveShadow = true;
+                        floorMesh.castShadow = true;
+                        floorMesh.receiveShadow = true;
                     }
                     break;
                 case 69:
@@ -589,7 +592,7 @@
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
         }
-
+        //Src: https://threejs.org/examples/webgl_multiple_views.html
         function updateSize() {
             if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
                 //actually been changed than this if statement is triggered
