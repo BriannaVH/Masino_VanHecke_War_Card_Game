@@ -11,8 +11,6 @@
     <script type="module">
 
         import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
-        import { FontLoader } from "http://cs.merrimack.edu/~stuetzlec/three.js-master/src/loaders/FontLoader.js";
-        import { TextGeometry } from "http://cs.merrimack.edu/~stuetzlec/three.js-master/src/geometries/TextGeometry.js";
         import { RectAreaLight } from "http://cs.merrimack.edu/~stuetzlec/three.js-master/src/lights/RectAreaLight.js";
 
         var scene = new THREE.Scene();
@@ -26,52 +24,26 @@
         let positions = [leftMid, centerMid, rightMid];
         var enableWar = 0;
         var gameOver = false;
-        let shadowCamera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
         let players = [];
-        let checkPlayerDecks = [];
         let cardPlacement = .08;
         let sky0 = false;
+        let floorMesh;
+        const loader = new THREE.TextureLoader();
 
-        const width1 = 10;
-        const height1 = 10;
+        const width1 = 5;
+        const height1 = 5;
         const intensity = 1;
         let movePermitted = true;
 
-        const rectLight = new THREE.RectAreaLight(0xffffff, intensity, width1, height1);
-        rectLight.position.set(0, 0, -1.6);
-        rectLight.lookAt(0, 0, 0);
-        scene.add(rectLight);
-
-        let text = 'three.js',
-            bevelEnabled = true,
-            font = undefined,
-            fontName = 'optimer', // helvetiker, optimer, gentilis, droid sans, droid serif
-            fontWeight = 'bold'; // normal bold
-
-        const height = 20,
-            size = 70,
-            hover = 30,
-            curveSegments = 4,
-            bevelThickness = 2,
-            bevelSize = 1.5;
-
-        const mirror = true;
-
-        const fontMap = {
-            'helvetiker': 0,
-            'optimer': 1,
-            'gentilis': 2,
-            'droid/droid_sans': 3,
-            'droid/droid_serif': 4
-        };
-
-        const weightMap = {
-            'regular': 0,
-            'bold': 1
-        };
-
         let woodTexture = 'misc_textures/table.jpg';
         let backOfCard = 'misc_textures/card_back.png';
+
+
+        let skies = [
+            new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky0.png'), side: THREE.DoubleSide }),
+            new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSide })
+        ];
+
 
         let clubs = ['card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
             'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
@@ -94,27 +66,23 @@
             'card_Textures/ace_of_spades.png'];
 
         var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
-        camera.position.x = 0;  // Try moving this around!
+        camera.position.x = 0;
         camera.position.y = 2.5;
-        camera.position.z = 4;  // Try moving this around!
+        camera.position.z = 4;
 
         var renderer = new THREE.WebGLRenderer({ canvas: myCanvas, antialias: true });
         renderer.setClearColor(0x000000);
-        // If you want this to span the window, instead of using the myCanvas object, use the window object
+
         renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight); //Sets the size of the renderer to the entirety of the
+        renderer.setSize(window.innerWidth, window.innerHeight);
         var focal = new THREE.Vector3(0.0, 0.0, 0.0);
 
-        renderer.shadowMap.enabled = true;//shadow
+        renderer.shadowMap.enabled = true;
         let shadowEnabled = true;
-
         camera.lookAt(focal);
         scene.add(camera);
 
-
-        // #FFC0CB
-        //0x0000ff
-        const ambientLight = new THREE.AmbientLight(0xFF66CC, 1); // soft white light
+        const ambientLight = new THREE.AmbientLight(0xFFB6C1, .5);
         scene.add(ambientLight);
 
         const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
@@ -126,28 +94,13 @@
         });
         bulbLight.add(new THREE.Mesh(bulbGeometry, bulbMat));
         bulbLight.position.set(0, 2.0, -2);
-
-        bulbLight.castShadow = true;//shadow
-
+        bulbLight.castShadow = true;
         scene.add(bulbLight);
 
-        // shadowCamera.position.x = bulbLight.position.x;
-        // shadowCamera.position.y = bulbLight.position.y;
-        // shadowCamera.position.z = bulbLight.position.z;
-        // console.log(shadowCamera.position);
-
-
-        const loader = new THREE.TextureLoader();
-        const geometry = new THREE.BoxGeometry(.2, .01, .4);
-
-
-        //here
-        let skies = [
-            new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky0.png'), side: THREE.DoubleSide }),
-            new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSide })
-        ];
-
-        //let i = 0;
+        const rectLight = new THREE.RectAreaLight(0xADD8E6, intensity, width1, height1);
+        rectLight.position.set(0, 0, -1.6);
+        rectLight.lookAt(0, 0, 0);
+        scene.add(rectLight);
 
         //left player 0, middle player 1. right player 2, we are player 1 in the middle
         const shuffleArray = deck => {
@@ -186,15 +139,11 @@
             this.mesh.receiveShadow = true;
             this.mesh.translateY(5);
 
-            console.log(this.mesh, 'mesh check shadow');
-
-
             scene.add(this.mesh);
         }
 
         function makeMaterial(value, suit) {
             const materials = [
-
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ map: loader.load(backOfCard) }), //this is the front
@@ -202,11 +151,9 @@
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
             ];
-
             let index = value - 1;
             let string;
             let material;
-
             if (suit == 1) { //Spade
                 string = spades[index];
                 material = new THREE.MeshPhysicalMaterial({
@@ -239,13 +186,19 @@
                 });
                 materials[3] = material;
             }
-            //console.log(material);
             return materials;
+        }
+
+        function initPlayers(number) {
+            let player;
+            for (let i = 0; i < number; i++) {
+                player = new Player(i, positions[i]);
+                players.push(player);
+            }
         }
 
         function initCards() {
             let card;
-
             for (let i = 1; i <= 13; i++) {
                 card = new Card(i, 1);
                 deck.push(card);
@@ -264,28 +217,6 @@
             }
         }
 
-        function initPlayers(number) {
-            let player;
-            for (let i = 0; i < number; i++) {
-                player = new Player(i, positions[i]);
-                players.push(player);
-            }
-            checkPlayerDecks = players;
-        }
-
-        function testShape() {
-            let geom = new THREE.BoxGeometry(.25, .25, .25);
-            let material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-            let mesh = new THREE.Mesh(geom, material);
-            mesh.position.set(0, 0, 0);
-            scene.add(mesh);
-            return mesh;
-        }
-
-        //  testShape();
-
-
         function initTable() {
             let string1 = 'misc_texures/table.png';
             let geometry = new THREE.BoxGeometry(3, .15, 3);
@@ -295,41 +226,11 @@
 
             });
             tableMesh = new THREE.Mesh(geometry, material);
-            tableMesh.receiveShadow = true;//shadow
+            tableMesh.receiveShadow = true;
             tableMesh.castShadow = true;
 
-            console.log(tableMesh, 'mesh');
             scene.add(tableMesh);
         }
-
-        // function initWindow() {
-        //     let string1 = 'windows/window6.jpg';
-        //     let windowgeometry = new THREE.BoxGeometry(2.2, 1.3, .02);
-
-        //     let windowMaterial = new THREE.MeshBasicMaterial({
-        //         // Use the map attribute to hold the texture
-        //         map: loader.load(string1),
-        //         map: loader.load(string1),
-        //         map: loader.load(string1),
-        //         map: loader.load(string1),
-        //         map: loader.load(string1),
-        //         map: loader.load(string1),
-
-        //     });
-        //     let windowMesh = new THREE.Mesh(windowgeometry, windowMaterial);
-
-        //     windowMesh.position.set(0, 0, -3.7);
-        //     // windowMesh.receiveShadow = true;//shadow
-        //     // windowMesh.castShadow = true;
-
-        //     console.log('window', windowMesh);
-
-        //     scene.add(windowMesh);
-        // }
-
-        let floorMesh;
-
-
 
         function initGround() {
             let string1 = 'floor/floor7.jpg';
@@ -344,47 +245,31 @@
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
             ];
             floorMesh = new THREE.Mesh(geometry, grounds);
-            floorMesh.receiveShadow = true;//shadow
+            floorMesh.receiveShadow = true;
             floorMesh.castShadow = true;
-
             floorMesh.position.set(0, -3, -5);
-
             floorMesh.rotateZ(Math.PI / 2);
-            //floorMesh.rotateY(Math.PI*2);
-            //floorMesh.rotation.x=-4.17;
-
-
             camera.lookAt(floorMesh.position.x, floorMesh.position.y, floorMesh.position.z);
 
-            console.log(floorMesh, 'mesh');
             scene.add(floorMesh);
-
-
         }
 
         function initHorizon() {
             let planeGeometry = new THREE.PlaneGeometry(2.5, 1.5);
             let planeMaterial = skies[1];
             let planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-            //planeMesh.rotateX(1);
-            scene.add(planeMesh);
             planeMesh.position.set(0, .80, -1.7);
+            scene.add(planeMesh);
             return planeMesh;
         }
 
         function initWall() {
             let wallPaperGeometry = new THREE.BoxGeometry(20, 5, 1);
-            //let wallPaperMaterial = new THREE.MeshBasicMaterial({ map: loader.load('wallpaper/wallpaper6.jpg'), side: THREE.DoubleSide });
-            let wallPaperMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+            let wallPaperMaterial = new THREE.MeshPhysicalMaterial({ color: 0xffffff, side: THREE.DoubleSide });
             let wallPaperMesh = new THREE.Mesh(wallPaperGeometry, wallPaperMaterial);
-            //planeMesh.rotateX(1);
-            //wallPaperMesh.rotateY(Math.PI/2);
-            // wallPaperMesh.castShadow=true;
-            // wallPaperMesh.receiveShadow=true;
-            scene.add(wallPaperMesh);
             wallPaperMesh.position.set(0, -3, -8);
+            scene.add(wallPaperMesh);
         }
-
 
         function dealCards(deck, players) {
             shuffleArray(deck);
@@ -399,16 +284,9 @@
                     players[2].playerDeck.push(deck[i]);
                 }
             }
-
             setOriginPosition(players);
-
-            // rotateCards(players[2]);
-            console.log("player id to rotate", players[0].player);
-            console.log("player id to rotate", players[2].player);
-            console.log("card placement, ", players[1].playerDeck[0].mesh.position);
             placeCards(players);
         }
-
 
         function placeCards(players) {
             let playerX;
@@ -421,14 +299,10 @@
                     playerX = players[i].playerPos.x;
                     playerY = players[i].playerPos.y;
                     playerZ = players[i].playerPos.z;
-                    //  console.log(players[i].playerDeck[x]);
                     players[i].playerDeck[x].mesh.position.set(playerX, playerY + height, playerZ);
-                    // players[i].playerPos = new THREE.Vector3(playerX, playerY, lastHeight+.1);
                 }
             }
-
         }
-
         function setOriginPosition(players) {
             for (let i = 0; i < players.length; i++) {
                 for (let x = 0; x < players[i].playerDeck.length; x++) {
@@ -439,69 +313,17 @@
             }
         }
 
-        function regularMove(players, warTime) {
-            console.log("START REG MOVE");
-            let cardsInPlay = getCardsInPlay(players);
-            console.log("CHICKEN BUTT ", cardsInPlay);
-            moveUp(cardsInPlay, warTime);
-
-            // for (let i = 0; i < players.length; i++) {
-            //     console.log("card passed into moveup ", players[i].currentCards[0]);
-            //     moveUp(players[i].currentCards[0]);
-            // }
-
-            //moveOneCard(players);
-
-            //  flip(card);
-            // moveForward(card);
-            // moveDown(card, -1);
-            //    let cardsInPlay = getCardsInPlay(players);
-            //     findWinOrWar(cardsInPlay);
-        }
-
-
-        // function tempWarMove(players) {
-        //     console.log("in temp war?");
-        //     if (checkPlayers(players) == true) {
-        //         moveOneCard(players);
-        //         regularMove(players);
-        //         moveOneCard(players);
-        //         regularMove(players);
-        //         // for (let i = 0; i < players.length; i++){
-        //         //     regularMove(players[i].currentCards[0]);
-        //         // }
-        //     }
-        //     // for (let i = 0; i < players.length; i++) {
-        //     //    // moveUpWar(players[i].currentCards[0]);
-        //     // }
-
-        //     //moveOneCard(players);
-
-        //     //  flip(card);
-        //     // moveForward(card);
-        //     // moveDown(card, -1);
-        //     //    let cardsInPlay = getCardsInPlay(players);
-        //     //     findWinOrWar(cardsInPlay);
-        // }
-
-
-
-        // function warMove(players) {
-        //     console.log("START WAR MOVE");
-        //     //moveUp(card);
-        //     //moveForward(card);
-        //     // moveDown(card, -1);
-        //     //  moveOneCard(players);
-        //     regularMove(players);
-
-        // }
-
-
-
         function delay(milliseconds) {
             return new Promise(resolve => {
                 setTimeout(resolve, milliseconds);
             });
+        }
+
+        function regularMove(players, warTime) {
+            console.log("START REG MOVE");
+            let cardsInPlay = getCardsInPlay(players);
+            // console.log("CHICKEN BUTT ", cardsInPlay);
+            moveUp(cardsInPlay, warTime);
         }
 
         async function moveUp(cards, warTime) {
@@ -510,13 +332,12 @@
                 let card = cards[c];
                 let i = 0;
                 while (card.mesh.position.y <= .75) {
-                    await delay(1);
+                    await delay(30);
                     card.mesh.translateY(.05); //.01
                     i++;
                 }
                 card.mesh.position.y = .75;
             }
-
             flip(cards, warTime);
         }
 
@@ -527,19 +348,13 @@
                     let card = cards[c];
                     let i = 0;
                     while (i < 15) { //30
-                        await delay(1);
-
-                        // console.log(card.mesh.rotation.z, 'card rotation before');
+                        await delay(15);
                         card.mesh.rotateZ(-.21); //-.105
-
-                        //console.log(card.mesh.rotation.z, 'card rotation after');
                         i++;
                     }
                     card.mesh.rotation.z = -3.15;
                 }
-
             }
-
             moveForward(cards, warTime);
         }
 
@@ -549,8 +364,8 @@
                 console.log("START MOVE FORWARD");
                 let card = cards[c];
                 while (card.mesh.position.z <= .8) {
-                    await delay(1);
-                    card.mesh.translateZ(.1); //.05
+                    await delay(25);
+                    card.mesh.translateZ(.05); //.05
                 }
             }
             moveDown(cards, warTime);
@@ -561,13 +376,11 @@
                 console.log("START MOVE DOWN");
                 let card = cards[c];
                 while (card.mesh.position.y >= cardPlacement) {
-                    await delay(1);
+                    await delay(15);
                     if (warTime == false) {
-                        console.log("card moving .04 with but not wartime", warTime);
                         card.mesh.translateY(.02);
                     }
                     else if (warTime == true) {
-                        console.log("card moving -.04 in wartime");
                         card.mesh.translateY(-.02);
                     }
                 }
@@ -576,31 +389,59 @@
             cardPlacement += .015;
             console.log("animation done");
             findWinOrWar(cards);
-            console.log("movedown");
 
             if (warTime == true) {
-
+                moveOneCard(players);
                 moveOneCard(players);
                 regularMove(players, false);
-
-                // movePermitted=false;
             }
-
-
-            // let cardsInPlay = getCardsInPlay(players);
-            // findWinOrWar(cardsInPlay);
-
         }
 
+        function findWinOrWar(cardsInPlay) {
+            console.log("FIND RESULT");
+            let wars = -10;
+            let max = 0;
+            for (let y = 0; y < cardsInPlay.length; y++) {
+                if (cardsInPlay[y].cardValue == max) {
+                    console.log("equal");
+                    wars = max;
+                }
+                if (cardsInPlay[y].cardValue > max) {
+                    console.log("greater");
 
-        //in: array of players [0.1.2]
-        //out: num players left
+                    max = cardsInPlay[y].cardValue;
+                }
+            }
+
+            if (max == wars) {
+                console.log("INTOWAR");
+                if (checkPlayers(players) == true) {
+                    moveOneCard(players);
+                    regularMove(players, true);
+                }
+            }
+            else if (max != wars) {
+                console.log("FIND WINNER ");
+                console.log("MAX IS ????? ", max);
+                let winner;
+                for (let i = 0; i < players.length; i++) {
+                    if (players[i].playing == true) {
+                        console.log("all player cards ", players[i].currentCards);
+                        let card = players[i].currentCards[0];
+                        console.log("CARD???  ", card);
+                        if (card.cardValue == max) {
+                            winner = players[i];
+                        }
+                    }
+                }
+                distributeWinnings(winner, players);
+            }
+        }
+
         function checkPlayers(players) {
             console.log("CHECK PLAYERS FUNC");
             let count = 0;
-
             for (let i = 0; i < players.length; i++) {
-                // console.log(i, " player deck ", players[i].playerDeck.length);
                 if (players[i].playerDeck.length == 0) {
                     players[i].playing = false;
                     if (players[i].playing == false) {
@@ -608,7 +449,6 @@
                     }
                 }
             }
-
             if (count == 2) {
                 console.log("WINNER WINNER CHICKEN DINNER");
                 for (let i = 0; i < players.length; i++) {
@@ -620,11 +460,8 @@
             else {
                 return true;
             }
-
         }
 
-        //in player
-        //out nothing
         function moveOneCard(players) {
             console.log("MOVE ONE CARD FUNC");
             for (let i = 0; i < players.length; i++) {
@@ -640,8 +477,6 @@
             }
         }
 
-        //in: players array
-        //out: an array of playing cards [1.2.3]
         function getCardsInPlay(players) {
             console.log("START GET CARDS");
             let cardsInPlay = [];
@@ -649,87 +484,17 @@
                 if (players[i].playing == true) {
                     cardsInPlay.push(players[i].currentCards[0]);
                     console.log("player current card ", players[i].currentCards[0]);
-                    // tryMoveVertical(players[i].currentCards[0], -1);
-                    // tryFlip(players[i].currentCards[0]);
-                    //tryMoveForward(players[i].currentCards[0]);
-                    // moveUp(players[i].player, players[i].currentCards[0]);
-                    //players[i].currentCards[0].mesh.translateY(.5);
-
                 }
             }
-            //toggleMovement();
-
             return cardsInPlay;
         }
 
-
-        //in: array [1,2,3] 
-        //out: max
-        function findWinOrWar(cardsInPlay) {
-            console.log("FIND RESULT");
-            let wars = -10;
-            let max = 0;
-            for (let y = 0; y < cardsInPlay.length; y++) {
-                //  console.log("war: ", wars);
-                //console.log("max: ", max);
-                //console.log("card ", cardsInPlay[y].cardValue);
-                //console.log("check ", cardsInPlay[y]);
-                if (cardsInPlay[y].cardValue == max) {
-                    console.log("equal");
-                    wars = max;
-                }
-                if (cardsInPlay[y].cardValue > max) {
-                    console.log("greater");
-                    // console.log("greater");
-                    max = cardsInPlay[y].cardValue;
-                }
-                // console.log("missed both");
-            }
-
-            if (max == wars) {
-                console.log("INTOWAR");
-                if (checkPlayers(players) == true) {
-                    moveOneCard(players);
-                    //tempWarMove(players);
-                    regularMove(players, true);
-
-                }
-            }
-            else if (max != wars) {
-                console.log("FIND WINNER ");
-                console.log("MAX IS ????? ", max);
-                let winner;
-                for (let i = 0; i < players.length; i++) {
-                    if (players[i].playing == true) {
-                        let card = players[i].currentCards[0];
-                        console.log("CARD???  ", card);
-                        if (card.cardValue == max) {
-                            winner = players[i];
-                        }
-                    }
-                }
-                distributeWinnings(winner, players);
-                //Console.log("GIVE SPOILS");
-                //distributeWinnings(winner, players);
-                //placeCards(players);
-                //setOriginPosition(players)
-            }
-
-
-            // console.log("max is ", max);
-            //return max;
-        }
-
-
-        //in: players
-        //out: none
         function distributeWinnings(winner, players) {
             console.log("START DISTR WINNING");
             let spoils = [];
             for (let i = 0; i < players.length; i++) {
                 spoils = spoils.concat(players[i].currentCards);
                 players[i].currentCards = [];
-
             }
             console.log("spoils of war ", spoils);
             console.log("winner ", winner);
@@ -737,103 +502,15 @@
                 winner.playerDeck.unshift(spoils[i]);
             }
             movePermitted = true;
-
         }
 
-
-        function hotPotato(players) {
+        function initMove(players) {
             console.log("HOT POTATO");
             if (checkPlayers(players) == true) {
                 moveOneCard(players);
                 regularMove(players, false);
-                // for (let i = 0; i < players.length; i++){
-                //     regularMove(players[i].currentCards[0]);
-                // }
             }
         }
-
-
-
-
-        function makeMove(players, isThisWar) {
-            let check = checkPlayers(players);
-            if (check == true) {
-                if (isThisWar == false) {
-                    moveOneCard(players);
-                }
-                else {
-                    moveOneCard(players);
-                    moveOneCard(players);
-                }
-
-                let cards = getCardsInPlay(players);
-                let state = findWinOrWar(cards);
-                if (state == -1) {
-                    console.log("War has begun");
-                    makeMove(players, true);
-                }
-                else {
-                    let winner;
-                    for (let i = 0; i < players.length; i++) {
-                        if (players[i].playing == true) {
-                            let card = players[i].currentCards[0];
-                            console.log("card in distribute ", card);
-                            if (card.cardValue == state) {
-                                winner = players[i];
-                            }
-                        }
-                    }
-                    distributeWinnings(winner, players);
-                    //placeCards(players);
-
-
-                    for (let i = 0; i < players.length; i++) {
-                        if (players[i].playing == true) {
-                            //  setOriginPosition(players);
-                            console.log(i, " player deck length ", players[i].playerDeck.length);
-                        }
-
-                    }
-                }
-            }
-            else {
-                let winner;
-                for (let i = 0; i < players.length; i++) {
-                    if (players[i].player == true) {
-                        winner = players[i].player;
-                    }
-                }
-                distributeWinnings(winner, players);
-                placeCards(players);
-                console.log("one player remains");
-            }
-        }
-
-
-        function animate() {
-            updateSize();
-
-            //    floorMesh.rotateX(.03);
-            //    console.log(floorMesh.rotation.x);
-
-
-            requestAnimationFrame(animate);
-            render();
-        }
-
-        function render() {
-            renderer.render(scene, camera);
-        }
-
-        function updateSize() {
-            if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
-                //actually been changed than this if statement is triggered
-                windowWidth = window.innerWidth;
-                windowHeight = window.innerHeight;
-                renderer.setSize(windowWidth, windowHeight);
-            }
-        }
-
 
         function keyHandler(e) {
             switch (e.keyCode) {
@@ -853,12 +530,10 @@
                     ambientLight.visible = !ambientLight.visible;
                     break;
                 case 80: //P
-                    //placeCards(players);
                     bulbLight.visible = !bulbLight.visible;
                     bulbLight.position.set(0, .79, -2);
                     break;
                 case 82: //R
-                    //placeCards(players);
                     rectLight.visible = !rectLight.visible;
                     break;
                 case 77: //P
@@ -889,7 +564,7 @@
                         planeMesh.material = skies[0];
                         sky0 = true;
                     }
-                    else{
+                    else {
                         planeMesh.material = skies[1];
                         sky0 = false;
                     }
@@ -900,37 +575,40 @@
                             cardPlacement = .08;
                             movePermitted = false;
                             placeCards(players);
-                            setOriginPosition(players)
-                            // toggleMovement();
-                            // makeMove(players, false);
-                            hotPotato(players);
+                            setOriginPosition(players);
+                            initMove(players);
                         }
-                        // else {
-                        //  //   console.log("u dumbass");
-                        // }
-
-
                     }
             }
         }
 
-
         document.addEventListener("keydown", keyHandler, false);
 
+        function animate() {
+            updateSize();
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
 
-        initTable();
+        function updateSize() {
+            if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
+                //actually been changed than this if statement is triggered
+                windowWidth = window.innerWidth;
+                windowHeight = window.innerHeight;
+                renderer.setSize(windowWidth, windowHeight);
+            }
+        }
+
+        initPlayers(3);
         initCards();
-        let planeMesh = initHorizon();
+        initTable();
         initGround();
         initWall();
-       // initWindow();
-        initPlayers(3);
+        let planeMesh = initHorizon();
         dealCards(deck, players);
-        console.log(players);
-
         animate();
-
         renderer.render(scene, camera);
+
     </script>
 </body>
 
