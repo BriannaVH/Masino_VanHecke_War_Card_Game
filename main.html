@@ -2,6 +2,8 @@
 
 <head>
     <title>WAR Card Game</title>
+    <!-- Zara Masino & Brianna Van Hecke  -->
+    <!-- For the "above and beyond" aspect, we did rect area lighting -->
 </head>
 
 <body>
@@ -14,6 +16,7 @@
         import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
         import { RectAreaLight } from "http://cs.merrimack.edu/~stuetzlec/three.js-master/src/lights/RectAreaLight.js";
 
+        //Variable declaration
         var scene = new THREE.Scene();
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
@@ -21,6 +24,7 @@
         let players = [];
         let tableMesh;
         let floorMesh;
+        //Position for each player position
         let leftMid = new THREE.Vector3(-1.15, 0, 0);
         let rightMid = new THREE.Vector3(1.15, 0, 0);
         let centerMid = new THREE.Vector3(0, 0, 0);
@@ -37,12 +41,12 @@
         let woodTexture = 'misc_textures/table.jpg';
         let backOfCard = 'misc_textures/card_back.png';
 
+        //Creates two textured materials for the horizons
         let skies = [
             new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky0.png'), side: THREE.DoubleSide }),
             new THREE.MeshBasicMaterial({ map: loader.load('skylines/sky2.jpg'), side: THREE.DoubleSide })
         ];
-
-
+        //Creates arrays of relative paths to each corresponding texture for each suit 
         let clubs = ['card_Textures/2_of_clubs.png', 'card_Textures/3_of_clubs.png', 'card_Textures/4_of_clubs.png', 'card_Textures/5_of_clubs.png',
             'card_Textures/6_of_clubs.png', 'card_Textures/7_of_clubs.png', 'card_Textures/8_of_clubs.png', 'card_Textures/9_of_clubs.png',
             'card_Textures/10_of_clubs.png', 'card_Textures/jack_of_clubs2.png', 'card_Textures/queen_of_clubs2.png',
@@ -63,26 +67,31 @@
             'card_Textures/9_of_spades.png', 'card_Textures/10_of_spades.png', 'card_Textures/jack_of_spades2.png', 'card_Textures/queen_of_spades2.png', 'card_Textures/king_of_spades2.png',
             'card_Textures/ace_of_spades.png'];
 
+
+        //Creates camera and positions camera for "intelligent positioning"
         var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, .1, 3000);
         camera.position.x = 0;
         camera.position.y = 2.5;
         camera.position.z = 4;
 
+        //Creates renderer for the canvas
         var renderer = new THREE.WebGLRenderer({ canvas: myCanvas, antialias: true });
         renderer.setClearColor(0x000000);
-
         renderer.setPixelRatio(document.getElementById('myCanvas').devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        //Creates a lookat For the camera
         var focal = new THREE.Vector3(0.0, 0.0, 0.0);
 
-        renderer.shadowMap.enabled = true;
-        camera.lookAt(focal);
-        scene.add(camera);
+        renderer.shadowMap.enabled = true; //Enables the shadow map on the renderer
+        camera.lookAt(focal);//Sets the camera's look at to the origin
+        scene.add(camera);//Adds the camera to the scene
 
+        //Creates Ambient light and adds it to the scene
         const ambientLight = new THREE.AmbientLight(0xFFB6C1, .5);
         scene.add(ambientLight);
 
         //Src : https://threejs.org/examples/?q=light#webgl_lights_physical
+        //Creates a sphere 
         const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
         let bulbLight = new THREE.PointLight(0xffee88, 1.5, 100, 2);
         let bulbMat = new THREE.MeshStandardMaterial({
