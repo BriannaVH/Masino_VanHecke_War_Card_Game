@@ -11,8 +11,7 @@
     <canvas id="myCanvas" width="1650" height="700"></canvas>
     <script type="module">
 
-        // NOTE: FUNKY STUFF WHEN WAR AND SOMEONE HAS 1 CARD LEFT, GET ALLOCATED TO WINNER WITHOUT PLACING
-
+        // imports for three.js and rectAreaLight
         import * as THREE from "http://cs.merrimack.edu/~stuetzlec/three.js-master/build/three.module.js";
         import { RectAreaLight } from "http://cs.merrimack.edu/~stuetzlec/three.js-master/src/lights/RectAreaLight.js";
 
@@ -33,11 +32,14 @@
         const width1 = 5;
         const height1 = 5;
         const intensity = 1;
+        // booleans to track game states
         let movePermitted = true;
         var gameOver = false;
         let sky0 = false;
+        // a loader to load textures
         const loader = new THREE.TextureLoader();
 
+        // the paths to the table and back of card texture
         let woodTexture = 'misc_textures/table.jpg';
         let backOfCard = 'misc_textures/card_back.png';
 
@@ -91,7 +93,7 @@
         scene.add(ambientLight);
 
         //Src : https://threejs.org/examples/?q=light#webgl_lights_physical
-        //Creates a sphere 
+        //Creates a sphere and pointlight and adds them both to the scene
         const bulbGeometry = new THREE.SphereGeometry(0.02, 16, 8);
         let bulbLight = new THREE.PointLight(0xffee88, 1.5, 100, 2);
         let bulbMat = new THREE.MeshStandardMaterial({
@@ -104,6 +106,7 @@
         bulbLight.castShadow = true;
         scene.add(bulbLight);
 
+        // creates a rectarealight and adds it to the scene
         const rectLight = new THREE.RectAreaLight(0xADD8E6, intensity, width1, height1);
         rectLight.position.set(0, 0, -1.6);
         rectLight.lookAt(0, 0, 0);
@@ -113,16 +116,22 @@
         // a function that shuffles the cards 
         // Src: https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj#:~:text=The%20first%20and%20simplest%20way,)%20%3D%3E%200.5%20%2D%20Math. 
         const shuffleArray = deck => {
+            // for each card in the deck
             for (let i = deck.length - 1; i > 0; i--) {
+                // set j to a random number between 0 and i+1
                 const j = Math.floor(Math.random() * (i + 1));
+                // store the current card at index i in temp
                 const temp = deck[i];
+                //swap the cards at indices i and j 
                 deck[i] = deck[j];
                 deck[j] = temp;
             }
         }
 
+        // a constructor for the player that takes the playerId and the playerposition
         function Player(playerID, playerPosition) {
-            this.cardsLeft = true;
+            // sets the players status, id, and position
+            // gives the player a deck and current card array
             this.player = playerID;
             this.playerDeck = [];
             this.playing = true;
@@ -130,28 +139,35 @@
             this.playerPos = playerPosition;
         }
 
+        // a constructor for a card that takes the value and the suit
         function Card(value, suit) {
             //Suit:
             //1 -- Spade
             //2 -- Hearts
             //3 -- Clubs
             //4 -- Diamonds
+            // sets the card's value and suit
             this.cardValue = value;
             this.cardSuit = suit;
 
+            // greates the card geometry and material 
             this.geometry = new THREE.BoxGeometry(.3, .01, .6);
             this.material = makeMaterial(this.cardValue, this.cardSuit);
 
+            // creates the card mesh, sets the rotation to 0
             this.mesh = new THREE.Mesh(this.geometry, this.material);
             this.mesh.rotation.x = 0;
+            // enables shadows for the card
             this.mesh.castShadow = true;
             this.mesh.receiveShadow = true;
-            this.mesh.translateY(5);
-
+            
+            // adds the card to the scene
             scene.add(this.mesh);
         }
 
+        // a function that makes a material for each card
         function makeMaterial(value, suit) {
+            // an array of the material to be used on each side of the card
             const materials = [
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
@@ -160,48 +176,70 @@
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
                 new THREE.MeshPhysicalMaterial({ color: 0xffffff }),
             ];
+            // set index to the value of the card -1
             let index = value - 1;
             let string;
             let material;
+            // if the suit is 1 
             if (suit == 1) { //Spade
+                // set string to the spades texture string at that index
                 string = spades[index];
+                // set material to the texture loaded with that string
                 material = new THREE.MeshPhysicalMaterial({
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                // set the third material in the materials array to be this material
                 materials[3] = material;
             }
+            // if the suit is 2 
             else if (suit == 2) { //Hearts
+                // set string to the hearts texture string at that index
                 string = hearts[index];
+                // set material to the texture loaded with that string
                 material = new THREE.MeshPhysicalMaterial({
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                // set the third material in the materials array to be this material
                 materials[3] = material;
             }
+            // if the suit is 3
             else if (suit == 3) { //Clubs
+                 // set string to the clubs texture string at that index
                 string = clubs[index];
+                // set material to the texture loaded with that string
                 material = new THREE.MeshPhysicalMaterial({
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                // set the third material in the materials array to be this material
                 materials[3] = material;
             }
+            // if the suit is 4
             else if (suit == 4) { //Diamonds
+                 // set string to the diamonds texture string at that index
                 string = diamonds[index];
+                // set material to the texture loaded with that string
                 material = new THREE.MeshPhysicalMaterial({
                     // Use the map attribute to hold the texture
                     map: loader.load(string),
                 });
+                // set the third material in the materials array to be this material
                 materials[3] = material;
             }
+            // return the full materials array
             return materials;
         }
 
+        // a function that initializes the players
         function initPlayers(number) {
             let player;
+            // for however many players you specify (3 in our case)
             for (let i = 0; i < number; i++) {
+                // make a new player
                 player = new Player(i, positions[i]);
+                // push the player to the players array
                 players.push(player);
             }
         }
@@ -661,37 +699,37 @@
         // a function to set actions to keys
         function keyHandler(e) {
             switch (e.keyCode) {
-                case 87: //w
+                case 87: // w
                     // translate the pointlight -.1 in the z direction
                     bulbLight.translateZ(-.1);
                     break;
-                case 83: //s
+                case 83: // s
                     // translate the pointlight in the .1 direction
                     bulbLight.translateZ(.1);
                     break;
-                case 68: //d
+                case 68: // d
                     // translate the pointlight .1 in the x direction
                     bulbLight.translateX(.1);
                     break;
-                case 65: //a
+                case 65: // a
                     // translate the pointlight -.1 in the x direction 
                     bulbLight.translateX(-.1);
                     break;
-                case 76: //L
+                case 76: // L
                     // set the ambient light visibility to the opposite of it's current state
                     ambientLight.visible = !ambientLight.visible;
                     break;
-                case 80: //P
+                case 80: // P
                     // set the pointlight visibility to the opposite of it's current state
                     bulbLight.visible = !bulbLight.visible;
                     // set the pointlight position to it's starting position
                     bulbLight.position.set(0, .79, -2);
                     break;
-                case 82: //R
+                case 82: // R
                     // set the rectangle light visibility to the opposite of it's current state
                     rectLight.visible = !rectLight.visible;
                     break;
-                case 77: //P
+                case 77: // P
                     renderer.shadowMap.enabled = !renderer.shadowMap.enabled;
                     let enabled = renderer.shadowMap.enabled;
 
@@ -718,7 +756,7 @@
                         floorMesh.receiveShadow = true;
                     }
                     break;
-                case 69:
+                case 69: // e 
                     // if sky0 is not the current window view
                     if (sky0 == false) {
                         // set the planemesh material to the first view in the skies
@@ -734,7 +772,7 @@
                         sky0 = false;
                     }
                     break;
-                case 78:
+                case 78: // n
                     // if the game is still in session
                     if (gameOver == false) {
                         // if the user is permitted to make a move
@@ -758,6 +796,7 @@
         // add the keyhandler to the document 
         document.addEventListener("keydown", keyHandler, false);
 
+        // a function that updates the scene and window with changes
         function animate() {
             updateSize();
             requestAnimationFrame(animate);
@@ -765,22 +804,26 @@
         }
 
         //Src: https://threejs.org/examples/webgl_multiple_views.html
+        // a function that updates the winodw height and width when there is a change in the window size
         function updateSize() {
-            if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) { //If the window width or height has
-                //actually been changed than this if statement is triggered
+            if (windowWidth != window.innerWidth || windowHeight != window.innerHeight) {
                 windowWidth = window.innerWidth;
                 windowHeight = window.innerHeight;
+                // sets the size of the window to the new specifications 
                 renderer.setSize(windowWidth, windowHeight);
             }
         }
 
+        // initializes the players, cards, and surroundings
         initPlayers(3);
         initCards();
         initTable();
         initGround();
         initWall();
         let planeMesh = initHorizon();
+        // deals the cards to the players
         dealCards(deck, players);
+        // calls animate and renders the scene
         animate();
         renderer.render(scene, camera);
 
