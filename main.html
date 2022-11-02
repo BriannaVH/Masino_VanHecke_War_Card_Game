@@ -403,7 +403,6 @@
         // a function that starts off a move 
         // given the players and if it is a normal or war movement
         function regularMove(players, warTime) {
-            console.log("START REG MOVE");
             // get the cards that are being used in the current move
             let cardsInPlay = getCardsInPlay(players);
             // start off the animation with moveUp
@@ -416,7 +415,6 @@
         async function moveUp(cards, warTime) {
             // for every current card
             for (let c = 0; c < cards.length; c++) {
-                console.log("START MOVE UP");
                 // store that card
                 let card = cards[c];
                 // while that cards y coordinate is less than or equal to .75
@@ -440,7 +438,6 @@
             if (warTime == false) {
                 // for every current card
                 for (let c = 0; c < cards.length; c++) {
-                    console.log("START FLIP");
                     // store the card and declare counter i
                     let card = cards[c];
                     let i = 0;
@@ -464,10 +461,8 @@
         // a function that moves the cards forward
         // given the current cards and if it is a normal or war movement
         async function moveForward(cards, warTime) {
-            console.log("OH NO MY BOOLEAN ", warTime);
             // for every card
             for (let c = 0; c < cards.length; c++) {
-                console.log("START MOVE FORWARD");
                 // store the card
                 let card = cards[c];
                 // while the card z position is less than or equal to .8
@@ -487,7 +482,6 @@
         async function moveDown(cards, warTime) {
             // for every card
             for (let c = 0; c < cards.length; c++) {
-                console.log("START MOVE DOWN");
                 // store the card
                 let card = cards[c];
                 // while the card's y position is greater than or equal to the cardPlacement
@@ -510,7 +504,6 @@
             }
             // increment cardPlacement by .015
             cardPlacement += .015;
-            console.log("animation done");
 
             // if this is a wartime animation
             if (warTime == true) {
@@ -531,7 +524,6 @@
         // a function that determines the winner or signals that there is a war
         // given the cards to compare
         function findWinOrWar(cardsInPlay) {
-            console.log("FIND RESULT");
             // set war to -10 and max to 0
             let wars = -10;
             let max = 0;
@@ -539,20 +531,17 @@
             for (let y = 0; y < cardsInPlay.length; y++) {
                 // if the card's value is equal to the max
                 if (cardsInPlay[y].cardValue == max) {
-                    console.log("equal");
                     // set wars equal to max since it is a pair of the highest value
                     wars = max;
                 }
                 // if the card's value is greater than max
                 if (cardsInPlay[y].cardValue > max) {
-                    console.log("greater");
                     // set max to that card's value
                     max = cardsInPlay[y].cardValue;
                 }
             }
             // if max is equal to war (the pair is the highest value)
             if (max == wars) {
-                console.log("INTOWAR");
                 // if the player is still in the game
                 if (checkPlayers(players) == true) {
                     // move one card for each player
@@ -563,17 +552,13 @@
             }
             // If there is no war
             else if (max != wars) {
-                console.log("FIND WINNER ");
-                console.log("MAX IS ????? ", max);
                 let winner;
                 // For each of the players
                 for (let i = 0; i < players.length; i++) {
                     // If the player is still in the game
                     if (players[i].playing == true) {
-                        console.log("all player cards ", players[i].currentCards);
                         // Store the top card in the players current cards
                         let card = players[i].currentCards[0];
-                        console.log("CARD???  ", card);
                         // If the card's value is the max value
                         if (card.cardValue == max) {
                             // Set the winner to that player
@@ -588,7 +573,6 @@
 
         // A function that checks if the players still have cards
         function checkPlayers(players) {
-            console.log("CHECK PLAYERS FUNC");
             // Initialize the count
             let count = 0;
             // For each player
@@ -606,11 +590,6 @@
             }
             // If the count is equal to 2, which means there is only one player left
             if (count == 2) {
-                console.log("WINNER WINNER CHICKEN DINNER");
-                // This can go when we are done with console.logs
-                for (let i = 0; i < players.length; i++) {
-                    console.log("deck at the end ", players[i].playerDeck);
-                }
                 // Set gameOver to true
                 gameOver = true;
                 // Return false
@@ -625,7 +604,6 @@
 
         // A function that moves a card from each player's deck to their current playing cards
         function moveOneCard(players) {
-            console.log("MOVE ONE CARD FUNC");
             // For each player
             for (let i = 0; i < players.length; i++) {
                 // If the player is still in the game
@@ -648,7 +626,6 @@
 
         // A function that gets the cards to be compared
         function getCardsInPlay(players) {
-            console.log("START GET CARDS");
             // Create an array to store the current cards
             let cardsInPlay = [];
             // for each player
@@ -657,7 +634,6 @@
                 if (players[i].playing == true) {
                     // Push the first card in the player's current cards to the array
                     cardsInPlay.push(players[i].currentCards[0]);
-                    console.log("player current card ", players[i].currentCards[0]);
                 }
             }
             // Return the array of the cards to compare
@@ -666,7 +642,6 @@
 
         // A function to give the cards to the winner of a round
         function distributeWinnings(winner, players) {
-            console.log("START DISTR WINNING");
             let spoils = [];
             // For each player
             for (let i = 0; i < players.length; i++) {
@@ -675,8 +650,6 @@
                 // Reset the player's current cards to empty
                 players[i].currentCards = [];
             }
-            console.log("spoils of war ", spoils);
-            console.log("winner ", winner);
             // For each card in spoils
             for (let i = 0; i < spoils.length; i++) {
                 // Unshift the card to the winner's deck 
@@ -688,7 +661,6 @@
 
         // a function to initialize a move
         function initMove(players) {
-            console.log("HOT POTATO");
             // if at least 2 players are still in the game
             if (checkPlayers(players) == true) {
                 // move one card to the current cards of each player
